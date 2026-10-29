@@ -4,5 +4,7 @@ import com.breudes.gerenciaentregas.core.domain.Encomenda;
 
 public interface EncomendaRepository {
     Encomenda criarEncomenda(Encomenda encomenda);
+    Encomenda buscarEncomenda(Long idEncomenda);
     Encomenda confirmarEntregaEncomenda(Encomenda encomenda);
+    boolean confirmaNotificacaoEncomenda(Long idEncomenda);
 }

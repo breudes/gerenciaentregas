@@ -10,11 +10,15 @@ public class Encomenda {
     private LocalDateTime dataDeCadastro;
     private LocalDateTime dataDeEntrega;
     private boolean ativo;
+    private StatusEncomenda status;
 
     public Encomenda() {
     }
 
-    public Encomenda(Long id, String descricao, Morador moradorDestinatario, Morador moradorRecebedor, LocalDateTime dataDeCadastro, LocalDateTime dataDeEntrega, boolean ativo) {
+    public Encomenda(Long id, String descricao,
+                     Morador moradorDestinatario, Morador moradorRecebedor,
+                     LocalDateTime dataDeCadastro, LocalDateTime dataDeEntrega,
+                     boolean ativo, StatusEncomenda status) {
         this.id = id;
         this.descricao = descricao;
         this.moradorDestinatario = moradorDestinatario;
@@ -22,6 +26,7 @@ public class Encomenda {
         this.dataDeCadastro = dataDeCadastro;
         this.dataDeEntrega = dataDeEntrega;
         this.ativo = ativo;
+        this.status = status;
     }
 
     public Long getId() {
@@ -78,5 +83,13 @@ public class Encomenda {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public StatusEncomenda getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEncomenda status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,6 @@
 package com.breudes.gerenciaentregas.core.exception;
 
-public class MoradorValidationException extends RuntimeException {
+public class MoradorValidationException extends IllegalArgumentException {
     private final String atributo;
 
     public MoradorValidationException(String atributo, String message) {

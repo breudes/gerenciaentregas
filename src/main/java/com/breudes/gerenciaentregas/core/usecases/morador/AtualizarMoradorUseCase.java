@@ -3,6 +3,9 @@ package com.breudes.gerenciaentregas.core.usecases.morador;
 import com.breudes.gerenciaentregas.core.domain.Morador;
 import com.breudes.gerenciaentregas.core.exception.MoradorValidationException;
 import com.breudes.gerenciaentregas.core.repository.MoradorRepository;
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+
+import java.util.Optional;
 
 public class AtualizarMoradorUseCase {
     private final MoradorRepository moradorRepository;
@@ -11,18 +14,18 @@ public class AtualizarMoradorUseCase {
         this.moradorRepository = moradorRepository;
     }
 
-    public Morador execute(Morador morador){
-        validarMorador(morador);
-        return moradorRepository.atualizarMorador(morador);
+    public Morador execute(String telefoneAtual, Morador morador){
+        validarMorador(telefoneAtual, morador);
+        return moradorRepository.atualizarMorador(telefoneAtual, morador);
     }
 
-    public void validarMorador(Morador morador){
+    public void validarMorador(String telefoneAtual, Morador morador){
         if (morador == null) {
             throw new MoradorValidationException("morador", "Morador não pode ser nulo.");
         }
 
-        Morador moradorExistente = moradorRepository.buscarMorador(morador.getId());
-        if(moradorExistente==null){
+        Optional<MoradorJpa> moradorExistente = moradorRepository.buscarMorador(telefoneAtual);
+        if(moradorExistente.isEmpty()){
             throw new MoradorValidationException("morador", "Morador não encontrado no sistema.");
         } else {
             if (morador.getTelefone() == null || morador.getTelefone().isBlank()) {

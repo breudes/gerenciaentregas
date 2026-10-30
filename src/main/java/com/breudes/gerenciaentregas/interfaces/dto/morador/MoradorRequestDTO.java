@@ -1,6 +1,4 @@
-package com.breudes.gerenciaentregas.interfaces.dto;
-
-import com.breudes.gerenciaentregas.core.domain.Morador;
+package com.breudes.gerenciaentregas.interfaces.dto.morador;
 
 public record MoradorRequestDTO(
         String nome,

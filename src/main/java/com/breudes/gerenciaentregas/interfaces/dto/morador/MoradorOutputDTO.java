@@ -1,7 +1,6 @@
-package com.breudes.gerenciaentregas.interfaces.dto;
+package com.breudes.gerenciaentregas.interfaces.dto.morador;
 
 public record MoradorOutputDTO(
-        Long id,
         String nome,
         String telefone,
         String apartamento,

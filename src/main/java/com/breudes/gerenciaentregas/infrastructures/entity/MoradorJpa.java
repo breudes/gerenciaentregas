@@ -2,9 +2,11 @@ package com.breudes.gerenciaentregas.infrastructures.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "moradores")
-public class MoradorJpa {
+public class MoradorJpa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

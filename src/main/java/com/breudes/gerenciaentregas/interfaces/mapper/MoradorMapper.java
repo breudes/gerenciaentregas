@@ -2,8 +2,8 @@ package com.breudes.gerenciaentregas.interfaces.mapper;
 
 import com.breudes.gerenciaentregas.core.domain.Morador;
 import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
-import com.breudes.gerenciaentregas.interfaces.dto.MoradorOutputDTO;
-import com.breudes.gerenciaentregas.interfaces.dto.MoradorRequestDTO;
+import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorOutputDTO;
+import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorRequestDTO;
 
 public class MoradorMapper {
     public static MoradorJpa converteEntityparaJpa(Morador morador){
@@ -37,7 +37,7 @@ public class MoradorMapper {
 
     public static Morador converteOutputDtoParaEntity(MoradorOutputDTO moradorOutputDTO){
         return new Morador(
-                moradorOutputDTO.id(),
+                null,
                 moradorOutputDTO.nome(),
                 moradorOutputDTO.telefone(),
                 moradorOutputDTO.apartamento(),

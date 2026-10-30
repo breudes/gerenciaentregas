@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,12 +35,12 @@ class CadastrarMoradorUseCaseTest {
         }
 
         @Override
-        public Morador buscarMorador(Long idMorador) {
-            return null;
+        public Optional<MoradorJpa> buscarMorador(String telefone) {
+            return Optional.empty();
         }
 
         @Override
-        public Morador atualizarMorador(Morador moradorExistente) {
+        public Morador atualizarMorador(String telefoneAtual, Morador moradorExistente) {
             return moradorExistente;
         }
     }

@@ -1,6 +1,9 @@
 package com.breudes.gerenciaentregas.infrastructures.repository;
 
 import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.event.NotificacaoEmail;
+import com.breudes.gerenciaentregas.core.port.NotificacaoPublisher;
 import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
 import com.breudes.gerenciaentregas.infrastructures.entity.EncomendaJpa;
 import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
@@ -20,10 +23,12 @@ import static com.breudes.gerenciaentregas.interfaces.mapper.EncomendaMapper.*;
 public class EncomendaRepositoryJpa implements EncomendaRepository {
     private final SpringDataJpaEncomenda springDataJpaEncomenda;
     private final SpringDataJpaMorador springDataJpaMorador;
+    private final NotificacaoPublisher notificacaoPublisher;
 
-    public EncomendaRepositoryJpa(SpringDataJpaEncomenda springDataJpaEncomenda, SpringDataJpaMorador springDataJpaMorador) {
+    public EncomendaRepositoryJpa(SpringDataJpaEncomenda springDataJpaEncomenda, SpringDataJpaMorador springDataJpaMorador, NotificacaoPublisher notificacaoPublisher) {
         this.springDataJpaEncomenda = springDataJpaEncomenda;
         this.springDataJpaMorador = springDataJpaMorador;
+        this.notificacaoPublisher = notificacaoPublisher;
     }
 
     @Override
@@ -49,8 +54,25 @@ public class EncomendaRepositoryJpa implements EncomendaRepository {
             }
 
             EncomendaJpa encomendaSalva = springDataJpaEncomenda.save(encomendaJpa);
+            Encomenda encomendaSalvaDomain = EncomendaMapper.converteJpaParaDomain(encomendaSalva);
+
+           Morador destinatario = encomendaSalvaDomain.getMoradorDestinatario();
+            if (encomendaSalva.getId() == null) {
+                throw new IllegalStateException("A encomenda criada precisa ter um ID para gerar a notificação.");
+            }
+
+            notificacaoPublisher.publicar(new NotificacaoEmail(
+                    encomendaSalva.getId(),
+                    destinatario.getEmail(),
+                    destinatario.getNome(),
+                    encomendaSalva.getDescricao(),
+                    destinatario.getApartamento(),
+                    destinatario.getBloco()
+            ));
+
+            Encomenda encomendaNotificada = this.enviaNotificacaoEncomenda(encomendaSalva.getId());
             enviaNotificacaoEncomenda(encomendaSalva.getId());
-            return converteJpaParaDomain(encomendaSalva);
+            return encomendaNotificada != null ? encomendaNotificada : encomendaSalvaDomain;
         }
     }
 

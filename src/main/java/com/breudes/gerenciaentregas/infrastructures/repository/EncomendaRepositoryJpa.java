@@ -49,6 +49,7 @@ public class EncomendaRepositoryJpa implements EncomendaRepository {
             }
 
             EncomendaJpa encomendaSalva = springDataJpaEncomenda.save(encomendaJpa);
+            enviaNotificacaoEncomenda(encomendaSalva.getId());
             return converteJpaParaDomain(encomendaSalva);
         }
     }

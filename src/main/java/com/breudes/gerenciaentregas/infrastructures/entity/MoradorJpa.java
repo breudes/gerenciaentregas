@@ -14,6 +14,7 @@ public class MoradorJpa implements Serializable {
     private String nome;
     @Column(nullable = false)
     private String telefone;
+    private String email;
     @Column(nullable = false)
     private String apartamento;
     @Column(nullable = false)
@@ -23,9 +24,14 @@ public class MoradorJpa implements Serializable {
     }
 
     public MoradorJpa(Long id, String nome, String telefone, String apartamento, String bloco) {
+        this(id, nome, telefone, null, apartamento, bloco);
+    }
+
+    public MoradorJpa(Long id, String nome, String telefone, String email, String apartamento, String bloco) {
         this.id = id;
         this.nome = nome;
         this.telefone = telefone;
+        this.email = email;
         this.apartamento = apartamento;
         this.bloco = bloco;
     }
@@ -54,6 +60,14 @@ public class MoradorJpa implements Serializable {
         this.telefone = telefone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getApartamento() {
         return apartamento;
     }
@@ -76,6 +90,7 @@ public class MoradorJpa implements Serializable {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", telefone='" + telefone + '\'' +
+                ", email='" + email + '\'' +
                 ", apartamento='" + apartamento + '\'' +
                 ", bloco='" + bloco + '\'' +
                 '}';

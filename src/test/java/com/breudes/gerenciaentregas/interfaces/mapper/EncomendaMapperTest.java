@@ -86,7 +86,7 @@ class EncomendaMapperTest {
 
     @Test
     void deveConverterRequestDtoParaDomain() {
-        MoradorRequestDTO moradorRequest = new MoradorRequestDTO("Maria", "11999887766", "101", "A");
+        MoradorRequestDTO moradorRequest = new MoradorRequestDTO("Maria", "11999887766", "maria@example.com", "101", "A");
         EncomendaRequestDto dto = new EncomendaRequestDto("Livro de Java", moradorRequest);
 
         Encomenda resultado = EncomendaMapper.converteRequestDtoParaDomain(dto);
@@ -94,6 +94,7 @@ class EncomendaMapperTest {
         assertAll(
                 () -> assertEquals("Livro de Java", resultado.getDescricao()),
                 () -> assertEquals("Maria", resultado.getMoradorDestinatario().getNome()),
+                () -> assertEquals("maria@example.com", resultado.getMoradorDestinatario().getEmail()),
                 () -> assertNotNull(resultado.getDataDeCadastro()),
                 () -> assertEquals(StatusEncomenda.PENDENTE, resultado.getStatus())
         );

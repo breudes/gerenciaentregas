@@ -74,8 +74,8 @@ class MoradorRepositoryJpaTest {
 
     @Test
     void deveAtualizarMoradorQuandoTelefoneAtualEhIgualAoNovoTelefone() {
-        Morador moradorExistente = new Morador(5L, "Maria Atualizada", "11999999999", "404", "D");
-        MoradorJpa moradorJpa = new MoradorJpa(5L, "Maria Antiga", "11999999999", "101", "A");
+        Morador moradorExistente = new Morador(5L, "Maria Atualizada", "11999999999", "maria@example.com", "404", "D");
+        MoradorJpa moradorJpa = new MoradorJpa(5L, "Maria Antiga", "11999999999", "maria.antiga@example.com", "101", "A");
 
         when(springDataJpaMorador.findByTelefone("11999999999")).thenReturn(Optional.of(moradorJpa));
         when(springDataJpaMorador.save(any(MoradorJpa.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -86,6 +86,7 @@ class MoradorRepositoryJpaTest {
                 () -> assertEquals(5L, resultado.getId()),
                 () -> assertEquals("Maria Atualizada", resultado.getNome()),
                 () -> assertEquals("11999999999", resultado.getTelefone()),
+                () -> assertEquals("maria@example.com", resultado.getEmail()),
                 () -> assertEquals("404", resultado.getApartamento()),
                 () -> assertEquals("D", resultado.getBloco())
         );

@@ -64,6 +64,7 @@ public class MoradorRepositoryJpa implements MoradorRepository {
                 moradorEncontradoJpa.setNome(moradorExistente.getNome());
                 moradorEncontradoJpa.setTelefone(moradorExistente.getTelefone());
             }
+            moradorEncontradoJpa.setEmail(moradorExistente.getEmail());
             moradorEncontradoJpa.setApartamento(moradorExistente.getApartamento());
             moradorEncontradoJpa.setBloco(moradorExistente.getBloco());
 

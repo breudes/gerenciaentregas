@@ -70,6 +70,7 @@ public class EncomendaMapper {
                 null,
                 encomendaRequestDto.moradorRequestDTO().nome(),
                 encomendaRequestDto.moradorRequestDTO().telefone(),
+                encomendaRequestDto.moradorRequestDTO().email(),
                 encomendaRequestDto.moradorRequestDTO().apartamento(),
                 encomendaRequestDto.moradorRequestDTO().bloco()
         );

@@ -4,6 +4,7 @@ public class Morador {
     private Long id;
     private String nome;
     private String telefone;
+    private String email;
     private String apartamento;
     private String bloco;
 
@@ -11,9 +12,14 @@ public class Morador {
     }
 
     public Morador(Long id, String nome, String telefone, String apartamento, String bloco) {
+        this(id, nome, telefone, null, apartamento, bloco);
+    }
+
+    public Morador(Long id, String nome, String telefone, String email, String apartamento, String bloco) {
         this.id = id;
         this.nome = nome;
         this.telefone = telefone;
+        this.email = email;
         this.apartamento = apartamento;
         this.bloco = bloco;
     }
@@ -40,6 +46,14 @@ public class Morador {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getApartamento() {

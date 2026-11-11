@@ -15,6 +15,7 @@ public class MoradorMapper {
                 morador.getId(),
                 morador.getNome(),
                 morador.getTelefone(),
+                morador.getEmail(),
                 morador.getApartamento(),
                 morador.getBloco());
     }
@@ -28,6 +29,7 @@ public class MoradorMapper {
                 moradorJpa.getId(),
                 moradorJpa.getNome(),
                 moradorJpa.getTelefone(),
+                moradorJpa.getEmail(),
                 moradorJpa.getApartamento(),
                 moradorJpa.getBloco()
         );
@@ -42,6 +44,7 @@ public class MoradorMapper {
                 null,
                 moradorRequestDTO.nome(),
                 moradorRequestDTO.telefone(),
+                moradorRequestDTO.email(),
                 moradorRequestDTO.apartamento(),
                 moradorRequestDTO.bloco()
         );
@@ -56,6 +59,7 @@ public class MoradorMapper {
                 null,
                 moradorOutputDTO.nome(),
                 moradorOutputDTO.telefone(),
+                moradorOutputDTO.email(),
                 moradorOutputDTO.apartamento(),
                 moradorOutputDTO.bloco()
         );

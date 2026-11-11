@@ -1,31 +1,21 @@
 package com.breudes.gerenciaentregas.core.usecases.encomenda;
 
 import com.breudes.gerenciaentregas.core.domain.Encomenda;
-import com.breudes.gerenciaentregas.core.domain.Morador;
-import com.breudes.gerenciaentregas.core.event.NotificacaoEmail;
 import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
-import com.breudes.gerenciaentregas.core.port.NotificacaoPublisher;
 import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
 
 public class CriarEncomendaUseCase {
     private final EncomendaRepository encomendaRepository;
-    private final NotificacaoPublisher notificacaoPublisher;
 
     public CriarEncomendaUseCase(
-            EncomendaRepository encomendaRepository,
-            NotificacaoPublisher notificacaoPublisher
+            EncomendaRepository encomendaRepository
     ) {
         this.encomendaRepository = encomendaRepository;
-        this.notificacaoPublisher = notificacaoPublisher;
     }
 
     public Encomenda execute(Encomenda encomenda){
         validaEncomenda(encomenda);
-        Encomenda encomendaCriada = encomendaRepository.criarEncomenda(encomenda);
-        if (encomendaCriada == null) {
-            return null;
-        }
-        return encomendaCriada;
+        return encomendaRepository.criarEncomenda(encomenda);
     }
 
     public void validaEncomenda(Encomenda encomenda){

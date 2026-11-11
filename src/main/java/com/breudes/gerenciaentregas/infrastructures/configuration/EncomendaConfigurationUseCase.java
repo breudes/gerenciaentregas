@@ -1,7 +1,6 @@
 package com.breudes.gerenciaentregas.infrastructures.configuration;
 
 import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
-import com.breudes.gerenciaentregas.core.port.NotificacaoPublisher;
 import com.breudes.gerenciaentregas.core.usecases.encomenda.ConfirmarNotificacaoDeEncomendaUseCase;
 import com.breudes.gerenciaentregas.core.usecases.encomenda.ConfirmarRetiradaDeEncomendaUseCase;
 import com.breudes.gerenciaentregas.core.usecases.encomenda.CriarEncomendaUseCase;
@@ -12,19 +11,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EncomendaConfigurationUseCase {
     private final EncomendaRepository encomendaRepository;
-    private final NotificacaoPublisher notificacaoPublisher;
 
     public EncomendaConfigurationUseCase(
-            EncomendaRepository encomendaRepository,
-            NotificacaoPublisher notificacaoPublisher
+            EncomendaRepository encomendaRepository
     ) {
         this.encomendaRepository = encomendaRepository;
-        this.notificacaoPublisher = notificacaoPublisher;
     }
 
     @Bean
     public CriarEncomendaUseCase criarEncomendaUseCase(){
-        return new CriarEncomendaUseCase(encomendaRepository, notificacaoPublisher);
+        return new CriarEncomendaUseCase(encomendaRepository);
     }
 
     @Bean

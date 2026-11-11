@@ -45,6 +45,21 @@ class MoradorMapperTest {
     }
 
     @Test
+    void devePreservarEmailNuloDoConstrutorLegadoNaConversaoJpa() {
+        Morador morador = new Morador(12L, "Carlos", "11996665544", "404", "D");
+
+        MoradorJpa moradorJpa = MoradorMapper.converteEntityparaJpa(morador);
+        Morador resultado = MoradorMapper.converteJpaParaEntity(moradorJpa);
+
+        assertAll(
+                () -> assertNull(moradorJpa.getEmail()),
+                () -> assertNull(resultado.getEmail()),
+                () -> assertEquals("Carlos", resultado.getNome()),
+                () -> assertEquals("11996665544", resultado.getTelefone())
+        );
+    }
+
+    @Test
     void deveConverterRequestDtoEmMorador() {
         MoradorRequestDTO dto = new MoradorRequestDTO("Carlos", "11990001122", "carlos@example.com", "404", "D");
 

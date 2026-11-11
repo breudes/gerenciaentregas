@@ -12,12 +12,28 @@ class MoradorTest {
     @Test
     @DisplayName("deve criar morador com todos os dados informados")
     void deveCriarMoradorComTodosOsDadosInformados() {
+        Morador morador = new Morador(1L, "Maria Silva", "11999999999", "maria@example.com", "101", "A");
+
+        assertAll(
+                () -> assertEquals(1L, morador.getId()),
+                () -> assertEquals("Maria Silva", morador.getNome()),
+                () -> assertEquals("11999999999", morador.getTelefone()),
+                () -> assertEquals("maria@example.com", morador.getEmail()),
+                () -> assertEquals("101", morador.getApartamento()),
+                () -> assertEquals("A", morador.getBloco())
+        );
+    }
+
+    @Test
+    @DisplayName("deve deixar e-mail nulo no construtor sem e-mail")
+    void deveDeixarEmailNuloNoConstrutorSemEmail() {
         Morador morador = new Morador(1L, "Maria Silva", "11999999999", "101", "A");
 
         assertAll(
                 () -> assertEquals(1L, morador.getId()),
                 () -> assertEquals("Maria Silva", morador.getNome()),
                 () -> assertEquals("11999999999", morador.getTelefone()),
+                () -> assertNull(morador.getEmail()),
                 () -> assertEquals("101", morador.getApartamento()),
                 () -> assertEquals("A", morador.getBloco())
         );
@@ -31,6 +47,7 @@ class MoradorTest {
         morador.setId(2L);
         morador.setNome("João Pereira");
         morador.setTelefone("11888888888");
+        morador.setEmail("joao@example.com");
         morador.setApartamento("205");
         morador.setBloco("B");
 
@@ -38,6 +55,7 @@ class MoradorTest {
                 () -> assertEquals(2L, morador.getId()),
                 () -> assertEquals("João Pereira", morador.getNome()),
                 () -> assertEquals("11888888888", morador.getTelefone()),
+                () -> assertEquals("joao@example.com", morador.getEmail()),
                 () -> assertEquals("205", morador.getApartamento()),
                 () -> assertEquals("B", morador.getBloco())
         );
@@ -52,6 +70,7 @@ class MoradorTest {
                 () -> assertNull(morador.getId()),
                 () -> assertNull(morador.getNome()),
                 () -> assertNull(morador.getTelefone()),
+                () -> assertNull(morador.getEmail()),
                 () -> assertNull(morador.getApartamento()),
                 () -> assertNull(morador.getBloco())
         );

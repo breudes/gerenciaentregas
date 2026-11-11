@@ -22,9 +22,12 @@ class EncomendaMapperTest {
 
     @Test
     void deveConverterDomainParaJpa() {
-        Morador destinatario = new Morador(1L, "Maria", "11999887766", "101", "A");
-        Morador recebedor = new Morador(2L, "João", "11988776655", "102", "B");
-        Encomenda encomenda = new Encomenda(5L, "Livro de Java", destinatario, recebedor, LocalDateTime.of(2024, 1, 10, 8, 30), null, true, StatusEncomenda.PENDENTE);
+        Morador destinatario = new Morador(1L, "Maria", "11999887766", "maria@example.com", "101", "A");
+        Morador recebedor = new Morador(2L, "João", "11988776655", "joao@example.com", "102", "B");
+        LocalDateTime dataCadastro = LocalDateTime.of(2024, 1, 10, 8, 30);
+        LocalDateTime dataEntrega = LocalDateTime.of(2024, 1, 10, 9, 15);
+        Encomenda encomenda = new Encomenda(5L, "Livro de Java", destinatario, recebedor,
+                dataCadastro, dataEntrega, true, StatusEncomenda.PENDENTE);
 
         EncomendaJpa resultado = EncomendaMapper.converteDomainParaJpa(encomenda);
 
@@ -32,7 +35,12 @@ class EncomendaMapperTest {
                 () -> assertEquals(5L, resultado.getId()),
                 () -> assertEquals("Livro de Java", resultado.getDescricao()),
                 () -> assertEquals("Maria", resultado.getMoradorDestinatarioJpa().getNome()),
+                () -> assertEquals("maria@example.com", resultado.getMoradorDestinatarioJpa().getEmail()),
                 () -> assertEquals("João", resultado.getMoradorRecebedorJpa().getNome()),
+                () -> assertEquals("joao@example.com", resultado.getMoradorRecebedorJpa().getEmail()),
+                () -> assertEquals(dataCadastro, resultado.getDataDeCadastro()),
+                () -> assertEquals(dataEntrega, resultado.getDataDeEntrega()),
+                () -> assertEquals(true, resultado.isAtivo()),
                 () -> assertEquals(StatusEncomendaJpa.PENDENTE, resultado.getStatus())
         );
     }
@@ -54,10 +62,12 @@ class EncomendaMapperTest {
 
     @Test
     void deveConverterJpaParaDomain() {
+        LocalDateTime dataCadastro = LocalDateTime.of(2024, 1, 10, 8, 30);
+        LocalDateTime dataEntrega = LocalDateTime.of(2024, 1, 10, 9, 15);
         EncomendaJpa encomendaJpa = new EncomendaJpa(7L, "Livro de Java",
-                new MoradorJpa(1L, "Maria", "11999887766", "101", "A"),
-                new MoradorJpa(2L, "João", "11988776655", "102", "B"),
-                LocalDateTime.of(2024, 1, 10, 8, 30), null, true, StatusEncomendaJpa.NOTIFICACAO_ENVIADA);
+                new MoradorJpa(1L, "Maria", "11999887766", "maria@example.com", "101", "A"),
+                new MoradorJpa(2L, "João", "11988776655", "joao@example.com", "102", "B"),
+                dataCadastro, dataEntrega, true, StatusEncomendaJpa.NOTIFICACAO_ENVIADA);
 
         Encomenda resultado = EncomendaMapper.converteJpaParaDomain(encomendaJpa);
 
@@ -65,7 +75,12 @@ class EncomendaMapperTest {
                 () -> assertEquals(7L, resultado.getId()),
                 () -> assertEquals("Livro de Java", resultado.getDescricao()),
                 () -> assertEquals("Maria", resultado.getMoradorDestinatario().getNome()),
+                () -> assertEquals("maria@example.com", resultado.getMoradorDestinatario().getEmail()),
                 () -> assertEquals("João", resultado.getMoradorRecebedor().getNome()),
+                () -> assertEquals("joao@example.com", resultado.getMoradorRecebedor().getEmail()),
+                () -> assertEquals(dataCadastro, resultado.getDataDeCadastro()),
+                () -> assertEquals(dataEntrega, resultado.getDataDeEntrega()),
+                () -> assertEquals(true, resultado.isAtivo()),
                 () -> assertEquals(StatusEncomenda.NOTIFICACAO_ENVIADA, resultado.getStatus())
         );
     }
@@ -94,8 +109,13 @@ class EncomendaMapperTest {
         assertAll(
                 () -> assertEquals("Livro de Java", resultado.getDescricao()),
                 () -> assertEquals("Maria", resultado.getMoradorDestinatario().getNome()),
+                () -> assertEquals("11999887766", resultado.getMoradorDestinatario().getTelefone()),
                 () -> assertEquals("maria@example.com", resultado.getMoradorDestinatario().getEmail()),
+                () -> assertEquals("101", resultado.getMoradorDestinatario().getApartamento()),
+                () -> assertEquals("A", resultado.getMoradorDestinatario().getBloco()),
+                () -> assertNull(resultado.getMoradorRecebedor()),
                 () -> assertNotNull(resultado.getDataDeCadastro()),
+                () -> assertEquals(true, resultado.isAtivo()),
                 () -> assertEquals(StatusEncomenda.PENDENTE, resultado.getStatus())
         );
     }

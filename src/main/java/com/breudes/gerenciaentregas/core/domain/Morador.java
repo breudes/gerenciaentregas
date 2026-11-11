@@ -1,5 +1,8 @@
 package com.breudes.gerenciaentregas.core.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Morador destinatário da encomenda.")
 public class Morador {
     private Long id;
     private String nome;

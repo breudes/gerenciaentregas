@@ -1,7 +1,10 @@
 package com.breudes.gerenciaentregas.core.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
+@Schema(description = "Encomenda cadastrada e seu estado de entrega/notificação.")
 public class Encomenda {
     private Long id;
     private String descricao;

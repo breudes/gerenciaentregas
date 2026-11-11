@@ -69,6 +69,25 @@ class ConfirmarRetiradaDeEncomendaUseCaseTest {
     }
 
     @Test
+    @DisplayName("Deve confirmar a retirada quando a notificação foi enviada.")
+    void deveConfirmarRetiradaQuandoNotificacaoFoiEnviada() {
+        RepositoryEmMemoria repository = new RepositoryEmMemoria();
+        Encomenda encomenda = new Encomenda();
+        encomenda.setId(2L);
+        encomenda.setStatus(StatusEncomenda.NOTIFICACAO_ENVIADA);
+        repository.encomendas.put(2L, encomenda);
+
+        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);
+
+        Encomenda resultado = useCase.execute(encomenda);
+
+        assertAll(
+                () -> assertSame(encomenda, resultado),
+                () -> assertSame(StatusEncomenda.ENTREGUE, repository.buscarEncomenda(2L).getStatus())
+        );
+    }
+
+    @Test
     @DisplayName("Deve rejeitar confirmação quando a encomenda for nula.")
     void deveRejeitarConfirmacaoQuandoEncomendaForNula() {
         RepositoryEmMemoria repository = new RepositoryEmMemoria();

@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.breudes.gerenciaentregas.core.domain.Encomenda;
 import com.breudes.gerenciaentregas.core.domain.Morador;
@@ -17,6 +18,7 @@ import com.breudes.gerenciaentregas.core.usecases.encomenda.CriarEncomendaUseCas
 import com.breudes.gerenciaentregas.interfaces.dto.encomenda.EncomendaRequestDto;
 import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorRequestDTO;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 class EncomendaControllerTest {
 
@@ -32,15 +34,18 @@ class EncomendaControllerTest {
     @Test
     void deveCriarEncomenda() {
         EncomendaRequestDto request = new EncomendaRequestDto("Livro de Java",
-                new MoradorRequestDTO("Maria", "11999999999", "101", "A"));
+            new MoradorRequestDTO("Maria", "11999999999", "maria@example.com", "101", "A"));
         Encomenda encomendaEsperada = new Encomenda(1L, "Livro de Java",
-                new Morador(1L, "Maria", "11999999999", "101", "A"), null, null, null, true, StatusEncomenda.PENDENTE);
+            new Morador(1L, "Maria", "11999999999", "maria@example.com", "101", "A"), null, null, null, true, StatusEncomenda.PENDENTE);
         when(criarEncomendaUseCase.execute(any(Encomenda.class))).thenReturn(encomendaEsperada);
 
         Encomenda resultado = controller.criarEncomenda(request);
 
         assertEquals("Livro de Java", resultado.getDescricao());
-        verify(criarEncomendaUseCase).execute(any(Encomenda.class));
+        ArgumentCaptor<Encomenda> encomendaCaptor = ArgumentCaptor.forClass(Encomenda.class);
+        verify(criarEncomendaUseCase).execute(encomendaCaptor.capture());
+        assertEquals("maria@example.com", encomendaCaptor.getValue().getMoradorDestinatario().getEmail());
+        verifyNoMoreInteractions(criarEncomendaUseCase);
     }
 
     @Test

@@ -5,16 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.breudes.gerenciaentregas.core.domain.Encomenda;
 import com.breudes.gerenciaentregas.core.domain.Morador;
-import com.breudes.gerenciaentregas.core.domain.StatusEncomenda;
-import com.breudes.gerenciaentregas.core.event.NotificacaoEmail;
 import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
 import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
 
@@ -25,9 +20,6 @@ class CriarEncomendaUseCaseTest {
 
         @Override
         public Encomenda criarEncomenda(Encomenda encomenda) {
-            if (encomenda.getId() == null) {
-                encomenda.setId(1L);
-            }
             this.encomendaSalva = encomenda;
             return encomenda;
         }
@@ -44,11 +36,7 @@ class CriarEncomendaUseCaseTest {
 
         @Override
         public Encomenda enviaNotificacaoEncomenda(Long idEncomenda) {
-            if (encomendaSalva == null || !encomendaSalva.getId().equals(idEncomenda)) {
-                return null;
-            }
-            encomendaSalva.setStatus(StatusEncomenda.NOTIFICACAO_ENVIADA);
-            return encomendaSalva;
+            return null;
         }
 
         @Override
@@ -58,15 +46,14 @@ class CriarEncomendaUseCaseTest {
     }
 
     private CriarEncomendaUseCase novoUseCase(RepositoryEmMemoria repository) {
-        return new CriarEncomendaUseCase(repository, notificacao -> {});
+        return new CriarEncomendaUseCase(repository);
     }
 
     @Test
     @DisplayName("Deve criar uma encomenda quando os dados forem válidos.")
     void deveCriarEncomendaQuandoDadosForemValidos() {
         RepositoryEmMemoria repository = new RepositoryEmMemoria();
-        List<NotificacaoEmail> notificacoes = new ArrayList<>();
-        CriarEncomendaUseCase useCase = new CriarEncomendaUseCase(repository, notificacoes::add);
+        CriarEncomendaUseCase useCase = novoUseCase(repository);
         Morador morador = new Morador(1L, "Maria Silva", "11999999999", "maria@example.com", "101", "A");
         Encomenda encomenda = new Encomenda(null, "Caixa de ingredientes", morador, null, null, null, true, null);
 
@@ -74,11 +61,7 @@ class CriarEncomendaUseCaseTest {
 
         assertAll(
                 () -> assertSame(encomenda, resultado),
-            () -> assertSame(encomenda, repository.encomendaSalva),
-            () -> assertEquals(StatusEncomenda.NOTIFICACAO_ENVIADA, resultado.getStatus()),
-            () -> assertEquals(List.of(new NotificacaoEmail(
-                1L, "maria@example.com", "Maria Silva", "Caixa de ingredientes", "101", "A"
-            )), notificacoes)
+                () -> assertSame(encomenda, repository.encomendaSalva)
         );
     }
 
@@ -181,6 +164,22 @@ class CriarEncomendaUseCaseTest {
         RepositoryEmMemoria repository = new RepositoryEmMemoria();
         CriarEncomendaUseCase useCase = novoUseCase(repository);
         Morador morador = new Morador(1L, "Maria Silva", "11999999999", "   ", "101", "A");
+        Encomenda encomenda = new Encomenda(null, "Caixa de ingredientes", morador, null, null, null, true, null);
+
+        EncomendaValidationException erro = assertThrows(
+                EncomendaValidationException.class,
+                () -> useCase.execute(encomenda)
+        );
+
+        assertEquals("E-mail do morador é obrigatório e não pode ser vazio.", erro.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar criação quando e-mail do morador for nulo.")
+    void deveRejeitarCriacaoQuandoEmailDoMoradorForNulo() {
+        RepositoryEmMemoria repository = new RepositoryEmMemoria();
+        CriarEncomendaUseCase useCase = novoUseCase(repository);
+        Morador morador = new Morador(1L, "Maria Silva", "11999999999", null, "101", "A");
         Encomenda encomenda = new Encomenda(null, "Caixa de ingredientes", morador, null, null, null, true, null);
 
         EncomendaValidationException erro = assertThrows(

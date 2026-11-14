@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CriarMoradorUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.morador</a> &gt; <span class="el_source">CriarMoradorUseCase.java</span></div><h1>CriarMoradorUseCase.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.morador;
+
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.exception.MoradorValidationException;
+import com.breudes.gerenciaentregas.core.repository.MoradorRepository;
+
+public class CriarMoradorUseCase {
+    private final MoradorRepository moradorRepository;
+
+<span class="fc" id="L10">    public CriarMoradorUseCase(MoradorRepository moradorRepository) {</span>
+<span class="fc" id="L11">        this.moradorRepository = moradorRepository;</span>
+<span class="fc" id="L12">    }</span>
+
+    public Morador execute(Morador morador){
+<span class="fc" id="L15">        validarMorador(morador);</span>
+<span class="fc" id="L16">        return moradorRepository.criarMorador(morador);</span>
+    }
+
+    public void validarMorador(Morador morador) {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (morador == null) {</span>
+<span class="fc" id="L21">            throw new MoradorValidationException(&quot;morador&quot;, &quot;Morador não pode ser nulo.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L24" title="All 4 branches covered.">        if (morador.getTelefone() == null || morador.getTelefone().isBlank()) {</span>
+<span class="fc" id="L25">            throw new MoradorValidationException(&quot;telefone&quot;, &quot;Telefone do morador é obrigatório.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L28" title="All 4 branches covered.">        if (morador.getApartamento() == null || morador.getApartamento().isBlank()) {</span>
+<span class="fc" id="L29">            throw new MoradorValidationException(&quot;apartamento&quot;, &quot;Apartamento do morador é obrigatório.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L32" title="All 4 branches covered.">        if (morador.getBloco() == null || morador.getBloco().isBlank()) {</span>
+<span class="fc" id="L33">            throw new MoradorValidationException(&quot;bloco&quot;, &quot;Bloco do morador é obrigatório.&quot;);</span>
+        }
+<span class="fc" id="L35">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

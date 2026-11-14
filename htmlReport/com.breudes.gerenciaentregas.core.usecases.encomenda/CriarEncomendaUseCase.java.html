@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CriarEncomendaUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.encomenda</a> &gt; <span class="el_source">CriarEncomendaUseCase.java</span></div><h1>CriarEncomendaUseCase.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.encomenda;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
+import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
+
+public class CriarEncomendaUseCase {
+    private final EncomendaRepository encomendaRepository;
+
+    public CriarEncomendaUseCase(
+            EncomendaRepository encomendaRepository
+<span class="fc" id="L12">    ) {</span>
+<span class="fc" id="L13">        this.encomendaRepository = encomendaRepository;</span>
+<span class="fc" id="L14">    }</span>
+
+    public Encomenda execute(Encomenda encomenda){
+<span class="fc" id="L17">        validaEncomenda(encomenda);</span>
+<span class="fc" id="L18">        return encomendaRepository.criarEncomenda(encomenda);</span>
+    }
+
+    public void validaEncomenda(Encomenda encomenda){
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if(encomenda == null){</span>
+<span class="fc" id="L23">            throw new EncomendaValidationException(&quot;encomenda&quot;, &quot;Encomenda não pode ser nula.&quot;);</span>
+        }
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if(encomenda.getDescricao() == null){</span>
+<span class="fc" id="L26">            throw new EncomendaValidationException(&quot;descrição&quot;, &quot;Descrição é obrigatória e não pode ser nula.&quot;);</span>
+        }
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if(encomenda.getDescricao().isBlank()){</span>
+<span class="fc" id="L29">            throw new EncomendaValidationException(&quot;descrição&quot;, &quot;Descrição é obrigatória e não pode ser vazia.&quot;);</span>
+        }
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if(encomenda.getMoradorDestinatario() == null){</span>
+<span class="fc" id="L32">            throw new EncomendaValidationException(&quot;morador&quot;, &quot;Morador é obrigatório e não pode ser nulo.&quot;);</span>
+        }
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if(encomenda.getMoradorDestinatario().getNome() == null){</span>
+<span class="fc" id="L35">            throw new EncomendaValidationException(&quot;nome de morador&quot;, &quot;Nome de morador é obrigatório e não pode ser nulo.&quot;);</span>
+        }
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(encomenda.getMoradorDestinatario().getNome().isBlank()){</span>
+<span class="fc" id="L38">            throw new EncomendaValidationException(&quot;nome de morador&quot;, &quot;Nome de morador é obrigatório e não pode ser vazio.&quot;);</span>
+        }
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (encomenda.getMoradorDestinatario().getEmail() == null</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                || encomenda.getMoradorDestinatario().getEmail().isBlank()) {</span>
+<span class="fc" id="L42">            throw new EncomendaValidationException(&quot;email&quot;, &quot;E-mail do morador é obrigatório e não pode ser vazio.&quot;);</span>
+        }
+<span class="fc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

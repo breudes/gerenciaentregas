@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.interfaces.controller</a> &gt; <span class="el_source">EncomendaController.java</span></div><h1>EncomendaController.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.interfaces.controller;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.usecases.encomenda.ConfirmarNotificacaoDeEncomendaUseCase;
+import com.breudes.gerenciaentregas.core.usecases.encomenda.ConfirmarRetiradaDeEncomendaUseCase;
+import com.breudes.gerenciaentregas.core.usecases.encomenda.CriarEncomendaUseCase;
+import com.breudes.gerenciaentregas.interfaces.dto.ApiErrorDTO;
+import com.breudes.gerenciaentregas.interfaces.dto.encomenda.EncomendaRequestDto;
+import com.breudes.gerenciaentregas.interfaces.mapper.EncomendaMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/api/encomendas&quot;)
+@Tag(name = &quot;Encomendas&quot;, description = &quot;Cadastro e acompanhamento de encomendas recebidas.&quot;)
+public class EncomendaController {
+    private final CriarEncomendaUseCase criarEncomendaUseCase;
+    private final ConfirmarNotificacaoDeEncomendaUseCase confirmarNotificacaoDeEncomendaUseCase;
+    private final ConfirmarRetiradaDeEncomendaUseCase confirmarRetiradaDeEncomendaUseCase;
+
+    public EncomendaController(CriarEncomendaUseCase criarEncomendaUseCase,
+                               ConfirmarNotificacaoDeEncomendaUseCase confirmarNotificacaoDeEncomendaUseCase,
+<span class="fc" id="L29">                               ConfirmarRetiradaDeEncomendaUseCase confirmarRetiradaDeEncomendaUseCase) {</span>
+<span class="fc" id="L30">        this.criarEncomendaUseCase = criarEncomendaUseCase;</span>
+<span class="fc" id="L31">        this.confirmarNotificacaoDeEncomendaUseCase = confirmarNotificacaoDeEncomendaUseCase;</span>
+<span class="fc" id="L32">        this.confirmarRetiradaDeEncomendaUseCase = confirmarRetiradaDeEncomendaUseCase;</span>
+<span class="fc" id="L33">    }</span>
+
+    @PostMapping
+        @Operation(summary = &quot;Cadastrar encomenda&quot;, description = &quot;Cadastra uma encomenda e solicita uma notificação ao destinatário.&quot;)
+        @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Encomenda cadastrada&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos&quot;,
+                content = @Content(schema = @Schema(implementation = ApiErrorDTO.class)))
+        })
+    public Encomenda criarEncomenda(@RequestBody EncomendaRequestDto encomendaRequestDto){
+<span class="fc" id="L43">        Encomenda encomenda = EncomendaMapper.converteRequestDtoParaDomain(encomendaRequestDto);</span>
+<span class="fc" id="L44">        return criarEncomendaUseCase.execute(encomenda);</span>
+    }
+
+    @PatchMapping(&quot;/confirma-notificacao&quot;)
+        @Operation(summary = &quot;Confirmar notificação&quot;, description = &quot;Registra que a notificação da encomenda foi recebida.&quot;)
+        @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Indica se a confirmação foi realizada&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;ID inválido ou encomenda não encontrada&quot;,
+                content = @Content(schema = @Schema(implementation = ApiErrorDTO.class)))
+        })
+        public boolean confirmaNotificacaoEncomenda(
+            @Parameter(name = &quot;idEncomenda&quot;, description = &quot;Identificador da encomenda&quot;, example = &quot;42&quot;, required = true)
+            @RequestParam(&quot;idEncomenda&quot;) Long idEncomenda
+        ){
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        return confirmarNotificacaoDeEncomendaUseCase.execute(idEncomenda) != null;</span>
+    }
+
+    @PatchMapping(&quot;/retirada&quot;)
+        @Operation(summary = &quot;Confirmar retirada&quot;, description = &quot;Confirma a retirada de uma encomenda previamente notificada.&quot;)
+        @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Indica se a retirada foi confirmada&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Retirada inválida ou encomenda não encontrada&quot;,
+                content = @Content(schema = @Schema(implementation = ApiErrorDTO.class)))
+        })
+        public boolean confirmaRetiradaEncomenda(
+            @Parameter(name = &quot;idEncomenda&quot;, description = &quot;Identificador da encomenda&quot;, example = &quot;42&quot;, required = true)
+            @RequestParam(&quot;idEncomenda&quot;) Long idEncomenda
+        ){
+<span class="fc" id="L72">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L73">        encomenda.setId(idEncomenda);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        return confirmarRetiradaDeEncomendaUseCase.execute(encomenda) != null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

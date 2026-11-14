@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaNotificacaoIntegrationTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.integration</a> &gt; <span class="el_source">EncomendaNotificacaoIntegrationTest.java</span></div><h1>EncomendaNotificacaoIntegrationTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.integration;
+
+import com.breudes.gerenciaentregas.infrastructures.entity.EncomendaJpa;
+import com.breudes.gerenciaentregas.infrastructures.enums.StatusEncomendaJpa;
+import com.breudes.gerenciaentregas.infrastructures.springdatajpa.SpringDataJpaEncomenda;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@Testcontainers(disabledWithoutDocker = true)
+@SpringBootTest
+@AutoConfigureMockMvc
+<span class="nc" id="L34">class EncomendaNotificacaoIntegrationTest {</span>
+    private static final String QUEUE = &quot;integration.notificacao.email&quot;;
+    private static final String EXCHANGE = &quot;integration.notificacao.exchange&quot;;
+    private static final String ROUTING_KEY = &quot;integration.notificacao.email&quot;;
+
+    @Container
+<span class="nc" id="L40">    private static final PostgreSQLContainer&lt;?&gt; postgres = new PostgreSQLContainer&lt;&gt;(&quot;postgres:18-alpine&quot;)</span>
+<span class="nc" id="L41">            .withDatabaseName(&quot;encomendas_test&quot;)</span>
+<span class="nc" id="L42">            .withUsername(&quot;test&quot;)</span>
+<span class="nc" id="L43">            .withPassword(&quot;test&quot;);</span>
+
+    @Container
+<span class="nc" id="L46">    private static final RabbitMQContainer rabbit = new RabbitMQContainer(&quot;rabbitmq:3-management-alpine&quot;);</span>
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+<span class="nc" id="L50">        registry.add(&quot;spring.datasource.url&quot;, postgres::getJdbcUrl);</span>
+<span class="nc" id="L51">        registry.add(&quot;spring.datasource.username&quot;, postgres::getUsername);</span>
+<span class="nc" id="L52">        registry.add(&quot;spring.datasource.password&quot;, postgres::getPassword);</span>
+<span class="nc" id="L53">        registry.add(&quot;spring.jpa.hibernate.ddl-auto&quot;, () -&gt; &quot;create-drop&quot;);</span>
+<span class="nc" id="L54">        registry.add(&quot;spring.rabbitmq.host&quot;, rabbit::getHost);</span>
+<span class="nc" id="L55">        registry.add(&quot;spring.rabbitmq.port&quot;, rabbit::getAmqpPort);</span>
+<span class="nc" id="L56">        registry.add(&quot;spring.rabbitmq.username&quot;, rabbit::getAdminUsername);</span>
+<span class="nc" id="L57">        registry.add(&quot;spring.rabbitmq.password&quot;, rabbit::getAdminPassword);</span>
+<span class="nc" id="L58">        registry.add(&quot;app.rabbitmq.queue&quot;, () -&gt; QUEUE);</span>
+<span class="nc" id="L59">        registry.add(&quot;app.rabbitmq.exchange&quot;, () -&gt; EXCHANGE);</span>
+<span class="nc" id="L60">        registry.add(&quot;app.rabbitmq.routing-key&quot;, () -&gt; ROUTING_KEY);</span>
+<span class="nc" id="L61">    }</span>
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private SpringDataJpaEncomenda encomendaRepository;
+
+<span class="nc" id="L72">    private final ObjectMapper objectMapper = new ObjectMapper();</span>
+
+    @Test
+    void devePersistirEncomendaEPublicarNotificacaoNoRabbit() throws Exception {
+<span class="nc" id="L76">        String request = &quot;&quot;&quot;</span>
+                {
+                  &quot;descricao&quot;: &quot;Pacote de integração&quot;,
+                  &quot;moradorRequestDTO&quot;: {
+                    &quot;nome&quot;: &quot;Maria Silva&quot;,
+                    &quot;telefone&quot;: &quot;11999990001&quot;,
+                    &quot;email&quot;: &quot;maria@example.com&quot;,
+                    &quot;apartamento&quot;: &quot;101&quot;,
+                    &quot;bloco&quot;: &quot;A&quot;
+                  }
+                }
+                &quot;&quot;&quot;;
+
+<span class="nc" id="L89">        String responseBody = mockMvc.perform(post(&quot;/api/encomendas&quot;)</span>
+<span class="nc" id="L90">                        .contentType(APPLICATION_JSON)</span>
+<span class="nc" id="L91">                        .content(request))</span>
+<span class="nc" id="L92">                .andExpect(status().isOk())</span>
+<span class="nc" id="L93">                .andReturn()</span>
+<span class="nc" id="L94">                .getResponse()</span>
+<span class="nc" id="L95">                .getContentAsString();</span>
+
+<span class="nc" id="L97">        JsonNode response = objectMapper.readTree(responseBody);</span>
+<span class="nc" id="L98">        long encomendaId = response.path(&quot;id&quot;).asLong();</span>
+<span class="nc" id="L99">        Message message = rabbitTemplate.receive(QUEUE, 5_000);</span>
+<span class="nc" id="L100">        assertNotNull(message, &quot;A mensagem não foi encontrada na fila RabbitMQ.&quot;);</span>
+
+<span class="nc" id="L102">        JsonNode notification = objectMapper.readTree(new String(message.getBody(), StandardCharsets.UTF_8));</span>
+<span class="nc" id="L103">        EncomendaJpa persisted = encomendaRepository.findById(encomendaId).orElseThrow();</span>
+
+<span class="nc" id="L105">        assertAll(</span>
+<span class="nc" id="L106">                () -&gt; assertEquals(StatusEncomendaJpa.NOTIFICACAO_ENVIADA, persisted.getStatus()),</span>
+<span class="nc" id="L107">                () -&gt; assertEquals(encomendaId, notification.path(&quot;encomendaId&quot;).asLong()),</span>
+<span class="nc" id="L108">                () -&gt; assertEquals(&quot;maria@example.com&quot;, notification.path(&quot;emailDestinatario&quot;).asText()),</span>
+<span class="nc" id="L109">                () -&gt; assertEquals(&quot;Maria Silva&quot;, notification.path(&quot;nomeDestinatario&quot;).asText()),</span>
+<span class="nc" id="L110">                () -&gt; assertEquals(&quot;Pacote de integração&quot;, notification.path(&quot;descricaoEncomenda&quot;).asText()),</span>
+<span class="nc" id="L111">                () -&gt; assertEquals(&quot;101&quot;, notification.path(&quot;apartamento&quot;).asText()),</span>
+<span class="nc" id="L112">                () -&gt; assertEquals(&quot;A&quot;, notification.path(&quot;bloco&quot;).asText())</span>
+        );
+<span class="nc" id="L114">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

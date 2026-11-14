@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MoradorRepositoryJpa.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.infrastructures.repository</a> &gt; <span class="el_source">MoradorRepositoryJpa.java</span></div><h1>MoradorRepositoryJpa.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.infrastructures.repository;
+
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.repository.MoradorRepository;
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+import com.breudes.gerenciaentregas.infrastructures.springdatajpa.SpringDataJpaMorador;
+import com.breudes.gerenciaentregas.interfaces.mapper.MoradorMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public class MoradorRepositoryJpa implements MoradorRepository {
+    private final SpringDataJpaMorador springDataJpaMorador;
+
+<span class="fc" id="L16">    public MoradorRepositoryJpa(SpringDataJpaMorador springDataJpaMorador) {</span>
+<span class="fc" id="L17">        this.springDataJpaMorador = springDataJpaMorador;</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public Morador criarMorador(Morador novoMorador) {
+<span class="fc" id="L22">        MoradorJpa novoMoradorJpa = MoradorMapper.converteEntityparaJpa(novoMorador);</span>
+        MoradorJpa moradorRegistrado;
+
+        // verifica se morador já existe pelo o telefone
+<span class="fc" id="L26">        Optional&lt;MoradorJpa&gt; moradorEncontrado = springDataJpaMorador.findByTelefone(novoMorador.getTelefone());</span>
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if(moradorEncontrado.isEmpty()){</span>
+<span class="fc" id="L29">            moradorRegistrado = springDataJpaMorador.save(novoMoradorJpa);</span>
+        } else {
+<span class="fc" id="L31">            throw new IllegalArgumentException(&quot;Telefone já registrado.&quot;);</span>
+        }
+<span class="fc" id="L33">        return MoradorMapper.converteJpaParaEntity(moradorRegistrado);</span>
+    }
+
+    @Override
+    public Optional&lt;MoradorJpa&gt; buscarMorador(String telefone) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (telefone == null) {</span>
+<span class="fc" id="L39">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L42">        return springDataJpaMorador.findByTelefone(telefone);</span>
+    }
+
+    @Override
+    public Morador atualizarMorador(String telefoneAtual, Morador moradorExistente) {
+<span class="fc bfc" id="L47" title="All 6 branches covered.">        if (moradorExistente == null || (telefoneAtual == null || telefoneAtual.isBlank())) {</span>
+<span class="fc" id="L48">            return null;</span>
+        }
+
+<span class="fc" id="L51">        Optional&lt;MoradorJpa&gt; optMoradorEncontradoJpa = buscarMorador(telefoneAtual);</span>
+        MoradorJpa moradorEncontradoJpa;
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(optMoradorEncontradoJpa.isPresent()){</span>
+<span class="fc" id="L55">            moradorEncontradoJpa = optMoradorEncontradoJpa.get();</span>
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            if(telefoneAtual.contains(moradorExistente.getTelefone())){</span>
+<span class="fc" id="L58">                moradorEncontradoJpa.setNome(moradorExistente.getNome());</span>
+            } else {
+<span class="fc" id="L60">                Optional&lt;MoradorJpa&gt; moradorComMesmoTelefone = springDataJpaMorador.findByTelefone(moradorExistente.getTelefone());</span>
+<span class="fc bfc" id="L61" title="All 4 branches covered.">                if (moradorComMesmoTelefone.isPresent() &amp;&amp; !moradorComMesmoTelefone.get().getId().equals(moradorExistente.getId())) {</span>
+<span class="fc" id="L62">                    throw new IllegalArgumentException(&quot;Telefone que deseja inserir já está registrado em nosso sistema.&quot;);</span>
+                }
+<span class="fc" id="L64">                moradorEncontradoJpa.setNome(moradorExistente.getNome());</span>
+<span class="fc" id="L65">                moradorEncontradoJpa.setTelefone(moradorExistente.getTelefone());</span>
+            }
+<span class="fc" id="L67">            moradorEncontradoJpa.setEmail(moradorExistente.getEmail());</span>
+<span class="fc" id="L68">            moradorEncontradoJpa.setApartamento(moradorExistente.getApartamento());</span>
+<span class="fc" id="L69">            moradorEncontradoJpa.setBloco(moradorExistente.getBloco());</span>
+
+<span class="fc" id="L71">            MoradorJpa moradorAtualizado = springDataJpaMorador.save(moradorEncontradoJpa);</span>
+<span class="fc" id="L72">            return MoradorMapper.converteJpaParaEntity(moradorAtualizado);</span>
+        } else {
+<span class="fc" id="L74">            throw new IllegalArgumentException(&quot;Morador não foi encontrado com este telefone atual.&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

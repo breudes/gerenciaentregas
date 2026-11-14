@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmarRetiradaDeEncomendaUseCaseTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.encomenda</a> &gt; <span class="el_source">ConfirmarRetiradaDeEncomendaUseCaseTest.java</span></div><h1>ConfirmarRetiradaDeEncomendaUseCaseTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.encomenda;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.StatusEncomenda;
+import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
+import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
+
+<span class="fc" id="L19">class ConfirmarRetiradaDeEncomendaUseCaseTest {</span>
+
+<span class="fc" id="L21">    private static class RepositoryEmMemoria implements EncomendaRepository {</span>
+<span class="fc" id="L22">        private final Map&lt;Long, Encomenda&gt; encomendas = new HashMap&lt;&gt;();</span>
+
+        @Override
+        public Encomenda criarEncomenda(Encomenda encomenda) {
+<span class="nc" id="L26">            return encomenda;</span>
+        }
+
+        @Override
+        public Encomenda buscarEncomenda(Long idEncomenda) {
+<span class="fc" id="L31">            return encomendas.get(idEncomenda);</span>
+        }
+
+        @Override
+        public Encomenda confirmarEntregaEncomenda(Encomenda encomenda) {
+<span class="fc" id="L36">            encomenda.setStatus(StatusEncomenda.ENTREGUE);</span>
+<span class="fc" id="L37">            encomendas.put(encomenda.getId(), encomenda);</span>
+<span class="fc" id="L38">            return encomenda;</span>
+        }
+
+        @Override
+        public Encomenda enviaNotificacaoEncomenda(Long idEncomenda) {
+<span class="nc" id="L43">            return null;</span>
+        }
+
+        @Override
+        public Encomenda confirmaNotificacaoEncomenda(Long idEncomenda) {
+<span class="nc" id="L48">            return null;</span>
+        }
+    }
+
+    @Test
+    @DisplayName(&quot;Deve confirmar a retirada quando a encomenda for válida.&quot;)
+    void deveConfirmarRetiradaQuandoEncomendaForValida() {
+<span class="fc" id="L55">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L56">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L57">        encomenda.setId(1L);</span>
+<span class="fc" id="L58">        encomenda.setStatus(StatusEncomenda.NOTIFICACAO_RECEBIDA);</span>
+<span class="fc" id="L59">        repository.encomendas.put(1L, encomenda);</span>
+
+<span class="fc" id="L61">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+
+<span class="fc" id="L63">        Encomenda resultado = useCase.execute(encomenda);</span>
+
+<span class="fc" id="L65">        assertAll(</span>
+<span class="fc" id="L66">                () -&gt; assertSame(encomenda, resultado),</span>
+<span class="fc" id="L67">                () -&gt; assertSame(StatusEncomenda.ENTREGUE, repository.buscarEncomenda(1L).getStatus())</span>
+        );
+<span class="fc" id="L69">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve confirmar a retirada quando a notificação foi enviada.&quot;)
+    void deveConfirmarRetiradaQuandoNotificacaoFoiEnviada() {
+<span class="fc" id="L74">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L75">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L76">        encomenda.setId(2L);</span>
+<span class="fc" id="L77">        encomenda.setStatus(StatusEncomenda.NOTIFICACAO_ENVIADA);</span>
+<span class="fc" id="L78">        repository.encomendas.put(2L, encomenda);</span>
+
+<span class="fc" id="L80">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+
+<span class="fc" id="L82">        Encomenda resultado = useCase.execute(encomenda);</span>
+
+<span class="fc" id="L84">        assertAll(</span>
+<span class="fc" id="L85">                () -&gt; assertSame(encomenda, resultado),</span>
+<span class="fc" id="L86">                () -&gt; assertSame(StatusEncomenda.ENTREGUE, repository.buscarEncomenda(2L).getStatus())</span>
+        );
+<span class="fc" id="L88">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar confirmação quando a encomenda for nula.&quot;)
+    void deveRejeitarConfirmacaoQuandoEncomendaForNula() {
+<span class="fc" id="L93">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L94">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+
+<span class="fc" id="L96">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L98">                () -&gt; useCase.execute(null)</span>
+        );
+
+<span class="fc" id="L101">        assertEquals(&quot;Encomenda não pode ser nula.&quot;, erro.getMessage());</span>
+<span class="fc" id="L102">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar confirmação quando a encomenda não existir.&quot;)
+    void deveRejeitarConfirmacaoQuandoEncomendaNaoExistir() {
+<span class="fc" id="L107">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L108">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+<span class="fc" id="L109">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L110">        encomenda.setId(99L);</span>
+<span class="fc" id="L111">        encomenda.setStatus(StatusEncomenda.NOTIFICACAO_ENVIADA);</span>
+
+<span class="fc" id="L113">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L115">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L118">        assertEquals(&quot;Encomenda não encontrada no sistema.&quot;, erro.getMessage());</span>
+<span class="fc" id="L119">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar confirmação quando o status for nulo.&quot;)
+    void deveRejeitarConfirmacaoQuandoStatusForNulo() {
+<span class="fc" id="L124">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L125">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L126">        encomenda.setId(1L);</span>
+<span class="fc" id="L127">        encomenda.setStatus(null);</span>
+<span class="fc" id="L128">        repository.encomendas.put(1L, encomenda);</span>
+
+<span class="fc" id="L130">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+
+<span class="fc" id="L132">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L134">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L137">        assertEquals(&quot;Status da encomenda não pode ser nulo.&quot;, erro.getMessage());</span>
+<span class="fc" id="L138">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar confirmação quando o status for inválido.&quot;)
+    void deveRejeitarConfirmacaoQuandoStatusForInvalido() {
+<span class="fc" id="L143">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L144">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L145">        encomenda.setId(1L);</span>
+<span class="fc" id="L146">        encomenda.setStatus(StatusEncomenda.PENDENTE);</span>
+<span class="fc" id="L147">        repository.encomendas.put(1L, encomenda);</span>
+
+<span class="fc" id="L149">        ConfirmarRetiradaDeEncomendaUseCase useCase = new ConfirmarRetiradaDeEncomendaUseCase(repository);</span>
+
+<span class="fc" id="L151">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L153">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L156">        assertEquals(&quot;Encomenda ainda não foi notificada ao destinatário, não é possível confirmar a retirada.&quot;, erro.getMessage());</span>
+<span class="fc" id="L157">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

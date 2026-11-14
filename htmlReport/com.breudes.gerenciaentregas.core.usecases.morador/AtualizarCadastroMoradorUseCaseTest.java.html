@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AtualizarCadastroMoradorUseCaseTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.morador</a> &gt; <span class="el_source">AtualizarCadastroMoradorUseCaseTest.java</span></div><h1>AtualizarCadastroMoradorUseCaseTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.morador;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.exception.MoradorValidationException;
+import com.breudes.gerenciaentregas.core.repository.MoradorRepository;
+
+<span class="fc" id="L20">class AtualizarCadastroMoradorUseCaseTest {</span>
+
+    private static class RepositoryEmMemoria implements MoradorRepository {
+        private final Morador moradorExistente;
+<span class="fc" id="L24">        private final Set&lt;String&gt; telefonesRegistrados = new HashSet&lt;&gt;();</span>
+        private Morador moradorAtualizado;
+
+<span class="fc" id="L27">        private RepositoryEmMemoria(Morador moradorExistente) {</span>
+<span class="fc" id="L28">            this.moradorExistente = moradorExistente;</span>
+<span class="fc" id="L29">            this.telefonesRegistrados.add(moradorExistente.getTelefone());</span>
+<span class="fc" id="L30">        }</span>
+
+        private MoradorJpa converterParaJpa(Morador morador) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">            if (morador == null) {</span>
+<span class="nc" id="L34">                return null;</span>
+            }
+
+<span class="fc" id="L37">            return new MoradorJpa(</span>
+<span class="fc" id="L38">                    morador.getId(),</span>
+<span class="fc" id="L39">                    morador.getNome(),</span>
+<span class="fc" id="L40">                    morador.getTelefone(),</span>
+<span class="fc" id="L41">                    morador.getApartamento(),</span>
+<span class="fc" id="L42">                    morador.getBloco()</span>
+            );
+        }
+
+        @Override
+        public Morador criarMorador(Morador novoMorador) {
+<span class="nc" id="L48">            return novoMorador;</span>
+        }
+
+        @Override
+        public Optional&lt;MoradorJpa&gt; buscarMorador(String telefone) {
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">            if (telefone == null || !telefone.equals(moradorExistente.getTelefone())) {</span>
+<span class="fc" id="L54">                return Optional.empty();</span>
+            }
+
+<span class="fc" id="L57">            return Optional.of(converterParaJpa(moradorExistente));</span>
+        }
+
+        @Override
+        public Morador atualizarMorador(String telefoneAtual, Morador moradorExistente) {
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">            if (moradorExistente.getTelefone() != null</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">                    &amp;&amp; !moradorExistente.getTelefone().equals(telefoneAtual)</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">                    &amp;&amp; telefonesRegistrados.contains(moradorExistente.getTelefone())) {</span>
+<span class="fc" id="L65">                throw new IllegalArgumentException(&quot;Telefone já registrado.&quot;);</span>
+            }
+
+<span class="fc" id="L68">            this.moradorAtualizado = moradorExistente;</span>
+<span class="fc" id="L69">            telefonesRegistrados.remove(telefoneAtual);</span>
+<span class="fc" id="L70">            telefonesRegistrados.add(moradorExistente.getTelefone());</span>
+<span class="fc" id="L71">            return moradorExistente;</span>
+        }
+    }
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando morador for nulo&quot;)
+    void deveRejeitarAtualizacaoQuandoMoradorForNulo() {
+<span class="fc" id="L78">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L79">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L80">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L82">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L84">                () -&gt; useCase.execute(moradorExistente.getTelefone(), null)</span>
+        );
+
+<span class="fc" id="L87">        assertEquals(&quot;Morador não pode ser nulo.&quot;, erro.getMessage());</span>
+<span class="fc" id="L88">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve atualizar um morador quando os dados são válidos&quot;)
+    void deveAtualizarMoradorQuandoDadosSaoValidos() {
+<span class="fc" id="L93">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L94">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L95">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+<span class="fc" id="L96">        Morador moradorAtualizado = new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;202&quot;, &quot;B&quot;);</span>
+
+<span class="fc" id="L98">        Morador resultado = useCase.execute(moradorExistente.getTelefone(), moradorAtualizado);</span>
+
+<span class="fc" id="L100">        assertAll(</span>
+<span class="fc" id="L101">                () -&gt; assertSame(moradorAtualizado, resultado),</span>
+<span class="fc" id="L102">                () -&gt; assertSame(moradorAtualizado, repository.moradorAtualizado)</span>
+        );
+<span class="fc" id="L104">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando morador não existir&quot;)
+    void deveRejeitarAtualizacaoQuandoMoradorNaoExistir() {
+<span class="fc" id="L109">        RepositoryEmMemoria repository = new RepositoryEmMemoria(new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;));</span>
+<span class="fc" id="L110">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L112">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L114">                () -&gt; useCase.execute(&quot;99999999999&quot;, new Morador(2L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;202&quot;, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L117">        assertEquals(&quot;Morador não encontrado no sistema.&quot;, erro.getMessage());</span>
+<span class="fc" id="L118">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando telefone já estiver sendo usado por outro morador&quot;)
+    void deveRejeitarAtualizacaoQuandoTelefoneJaEstiverSendoUsadoPorOutroMorador() {
+<span class="fc" id="L123">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L124">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L125">        repository.telefonesRegistrados.add(&quot;11888888888&quot;);</span>
+<span class="fc" id="L126">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L128">        IllegalArgumentException erro = assertThrows(</span>
+                IllegalArgumentException.class,
+<span class="nc" id="L130">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;202&quot;, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L133">        assertEquals(&quot;Telefone já registrado.&quot;, erro.getMessage());</span>
+<span class="fc" id="L134">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando telefone for nulo&quot;)
+    void deveRejeitarAtualizacaoQuandoTelefoneForNulo() {
+<span class="fc" id="L139">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L140">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L141">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L143">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L145">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, null, &quot;202&quot;, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L148">        assertEquals(&quot;Telefone do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando telefone for vazio&quot;)
+    void deveRejeitarAtualizacaoQuandoTelefoneForVazio() {
+<span class="fc" id="L154">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L155">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L156">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L158">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L160">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;   &quot;, &quot;202&quot;, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L163">        assertEquals(&quot;Telefone do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L164">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando apartamento for nulo&quot;)
+    void deveRejeitarAtualizacaoQuandoApartamentoForNulo() {
+<span class="fc" id="L169">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L170">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L171">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L173">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L175">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, null, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L178">        assertEquals(&quot;Apartamento do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L179">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando apartamento for vazio&quot;)
+    void deveRejeitarAtualizacaoQuandoApartamentoForVazio() {
+<span class="fc" id="L184">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L185">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L186">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L188">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L190">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;   &quot;, &quot;B&quot;))</span>
+        );
+
+<span class="fc" id="L193">        assertEquals(&quot;Apartamento do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L194">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando bloco for nulo&quot;)
+    void deveRejeitarAtualizacaoQuandoBlocoForNulo() {
+<span class="fc" id="L199">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L200">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L201">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L203">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L205">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;202&quot;, null))</span>
+        );
+
+<span class="fc" id="L208">        assertEquals(&quot;Bloco do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L209">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar atualização quando bloco for vazio&quot;)
+    void deveRejeitarAtualizacaoQuandoBlocoForVazio() {
+<span class="fc" id="L214">        Morador moradorExistente = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L215">        RepositoryEmMemoria repository = new RepositoryEmMemoria(moradorExistente);</span>
+<span class="fc" id="L216">        AtualizarMoradorUseCase useCase = new AtualizarMoradorUseCase(repository);</span>
+
+<span class="fc" id="L218">        MoradorValidationException erro = assertThrows(</span>
+                MoradorValidationException.class,
+<span class="nc" id="L220">                () -&gt; useCase.execute(moradorExistente.getTelefone(), new Morador(1L, &quot;Maria Souza&quot;, &quot;11888888888&quot;, &quot;202&quot;, &quot;   &quot;))</span>
+        );
+
+<span class="fc" id="L223">        assertEquals(&quot;Bloco do morador é obrigatório.&quot;, erro.getMessage());</span>
+<span class="fc" id="L224">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

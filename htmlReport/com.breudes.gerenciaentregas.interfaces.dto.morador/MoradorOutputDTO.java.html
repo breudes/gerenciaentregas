@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MoradorOutputDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.interfaces.dto.morador</a> &gt; <span class="el_source">MoradorOutputDTO.java</span></div><h1>MoradorOutputDTO.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.interfaces.dto.morador;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = &quot;Dados atualizados de um morador.&quot;)
+<span class="fc" id="L6">public record MoradorOutputDTO(</span>
+        @Schema(description = &quot;Nome completo&quot;, example = &quot;Maria Silva&quot;)
+        String nome,
+        @Schema(description = &quot;Telefone de contato&quot;, example = &quot;11999999999&quot;)
+        String telefone,
+        @Schema(description = &quot;E-mail para receber notificações&quot;, example = &quot;maria@example.com&quot;)
+                String email,
+        @Schema(description = &quot;Número do apartamento&quot;, example = &quot;101&quot;)
+        String apartamento,
+        @Schema(description = &quot;Bloco do apartamento&quot;, example = &quot;A&quot;)
+        String bloco
+) {
+        public MoradorOutputDTO(String nome, String telefone, String apartamento, String bloco) {
+<span class="fc" id="L19">                this(nome, telefone, null, apartamento, bloco);</span>
+<span class="fc" id="L20">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

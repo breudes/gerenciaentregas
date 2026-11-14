@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Encomenda.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.domain</a> &gt; <span class="el_source">Encomenda.java</span></div><h1>Encomenda.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.domain;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalDateTime;
+
+@Schema(description = &quot;Encomenda cadastrada e seu estado de entrega/notificação.&quot;)
+public class Encomenda {
+    private Long id;
+    private String descricao;
+    private Morador moradorDestinatario;
+    private Morador moradorRecebedor;
+    private LocalDateTime dataDeCadastro;
+    private LocalDateTime dataDeEntrega;
+    private boolean ativo;
+    private StatusEncomenda status;
+
+<span class="fc" id="L18">    public Encomenda() {</span>
+<span class="fc" id="L19">    }</span>
+
+    public Encomenda(Long id, String descricao,
+                     Morador moradorDestinatario, Morador moradorRecebedor,
+                     LocalDateTime dataDeCadastro, LocalDateTime dataDeEntrega,
+<span class="fc" id="L24">                     boolean ativo, StatusEncomenda status) {</span>
+<span class="fc" id="L25">        this.id = id;</span>
+<span class="fc" id="L26">        this.descricao = descricao;</span>
+<span class="fc" id="L27">        this.moradorDestinatario = moradorDestinatario;</span>
+<span class="fc" id="L28">        this.moradorRecebedor = moradorRecebedor;</span>
+<span class="fc" id="L29">        this.dataDeCadastro = dataDeCadastro;</span>
+<span class="fc" id="L30">        this.dataDeEntrega = dataDeEntrega;</span>
+<span class="fc" id="L31">        this.ativo = ativo;</span>
+<span class="fc" id="L32">        this.status = status;</span>
+<span class="fc" id="L33">    }</span>
+
+    public Long getId() {
+<span class="fc" id="L36">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L40">        this.id = id;</span>
+<span class="fc" id="L41">    }</span>
+
+    public String getDescricao() {
+<span class="fc" id="L44">        return descricao;</span>
+    }
+
+    public void setDescricao(String descricao) {
+<span class="fc" id="L48">        this.descricao = descricao;</span>
+<span class="fc" id="L49">    }</span>
+
+    public Morador getMoradorDestinatario() {
+<span class="fc" id="L52">        return moradorDestinatario;</span>
+    }
+
+    public void setMoradorDestinatario(Morador moradorDestinatario) {
+<span class="fc" id="L56">        this.moradorDestinatario = moradorDestinatario;</span>
+<span class="fc" id="L57">    }</span>
+
+    public Morador getMoradorRecebedor() {
+<span class="fc" id="L60">        return moradorRecebedor;</span>
+    }
+
+    public void setMoradorRecebedor(Morador moradorRecebedor) {
+<span class="fc" id="L64">        this.moradorRecebedor = moradorRecebedor;</span>
+<span class="fc" id="L65">    }</span>
+
+    public LocalDateTime getDataDeCadastro() {
+<span class="fc" id="L68">        return dataDeCadastro;</span>
+    }
+
+    public void setDataDeCadastro(LocalDateTime dataDeCadastro) {
+<span class="fc" id="L72">        this.dataDeCadastro = dataDeCadastro;</span>
+<span class="fc" id="L73">    }</span>
+
+    public LocalDateTime getDataDeEntrega() {
+<span class="fc" id="L76">        return dataDeEntrega;</span>
+    }
+
+    public void setDataDeEntrega(LocalDateTime dataDeEntrega) {
+<span class="fc" id="L80">        this.dataDeEntrega = dataDeEntrega;</span>
+<span class="fc" id="L81">    }</span>
+
+    public boolean isAtivo() {
+<span class="fc" id="L84">        return ativo;</span>
+    }
+
+    public void setAtivo(boolean ativo) {
+<span class="fc" id="L88">        this.ativo = ativo;</span>
+<span class="fc" id="L89">    }</span>
+
+    public StatusEncomenda getStatus() {
+<span class="fc" id="L92">        return status;</span>
+    }
+
+    public void setStatus(StatusEncomenda status) {
+<span class="fc" id="L96">        this.status = status;</span>
+<span class="fc" id="L97">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

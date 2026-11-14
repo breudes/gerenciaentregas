@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AtualizarMoradorUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.morador</a> &gt; <span class="el_source">AtualizarMoradorUseCase.java</span></div><h1>AtualizarMoradorUseCase.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.morador;
+
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.exception.MoradorValidationException;
+import com.breudes.gerenciaentregas.core.repository.MoradorRepository;
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+
+import java.util.Optional;
+
+public class AtualizarMoradorUseCase {
+    private final MoradorRepository moradorRepository;
+
+<span class="fc" id="L13">    public AtualizarMoradorUseCase(MoradorRepository moradorRepository) {</span>
+<span class="fc" id="L14">        this.moradorRepository = moradorRepository;</span>
+<span class="fc" id="L15">    }</span>
+
+    public Morador execute(String telefoneAtual, Morador morador){
+<span class="fc" id="L18">        validarMorador(telefoneAtual, morador);</span>
+<span class="fc" id="L19">        return moradorRepository.atualizarMorador(telefoneAtual, morador);</span>
+    }
+
+    public void validarMorador(String telefoneAtual, Morador morador){
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (morador == null) {</span>
+<span class="fc" id="L24">            throw new MoradorValidationException(&quot;morador&quot;, &quot;Morador não pode ser nulo.&quot;);</span>
+        }
+
+<span class="fc" id="L27">        Optional&lt;MoradorJpa&gt; moradorExistente = moradorRepository.buscarMorador(telefoneAtual);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if(moradorExistente.isEmpty()){</span>
+<span class="fc" id="L29">            throw new MoradorValidationException(&quot;morador&quot;, &quot;Morador não encontrado no sistema.&quot;);</span>
+        } else {
+<span class="fc bfc" id="L31" title="All 4 branches covered.">            if (morador.getTelefone() == null || morador.getTelefone().isBlank()) {</span>
+<span class="fc" id="L32">                throw new MoradorValidationException(&quot;telefone&quot;, &quot;Telefone do morador é obrigatório.&quot;);</span>
+            }
+
+<span class="fc bfc" id="L35" title="All 4 branches covered.">            if (morador.getApartamento() == null || morador.getApartamento().isBlank()) {</span>
+<span class="fc" id="L36">                throw new MoradorValidationException(&quot;apartamento&quot;, &quot;Apartamento do morador é obrigatório.&quot;);</span>
+            }
+
+<span class="fc bfc" id="L39" title="All 4 branches covered.">            if (morador.getBloco() == null || morador.getBloco().isBlank()) {</span>
+<span class="fc" id="L40">                throw new MoradorValidationException(&quot;bloco&quot;, &quot;Bloco do morador é obrigatório.&quot;);</span>
+            }
+        }
+<span class="fc" id="L43">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

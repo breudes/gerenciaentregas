@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaMapperTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.interfaces.mapper</a> &gt; <span class="el_source">EncomendaMapperTest.java</span></div><h1>EncomendaMapperTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.interfaces.mapper;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.time.LocalDateTime;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.domain.StatusEncomenda;
+import com.breudes.gerenciaentregas.infrastructures.entity.EncomendaJpa;
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+import com.breudes.gerenciaentregas.infrastructures.enums.StatusEncomendaJpa;
+import com.breudes.gerenciaentregas.interfaces.dto.encomenda.EncomendaRequestDto;
+import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorRequestDTO;
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L21">class EncomendaMapperTest {</span>
+
+    @Test
+    void deveConverterDomainParaJpa() {
+<span class="fc" id="L25">        Morador destinatario = new Morador(1L, &quot;Maria&quot;, &quot;11999887766&quot;, &quot;maria@example.com&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L26">        Morador recebedor = new Morador(2L, &quot;João&quot;, &quot;11988776655&quot;, &quot;joao@example.com&quot;, &quot;102&quot;, &quot;B&quot;);</span>
+<span class="fc" id="L27">        LocalDateTime dataCadastro = LocalDateTime.of(2024, 1, 10, 8, 30);</span>
+<span class="fc" id="L28">        LocalDateTime dataEntrega = LocalDateTime.of(2024, 1, 10, 9, 15);</span>
+<span class="fc" id="L29">        Encomenda encomenda = new Encomenda(5L, &quot;Livro de Java&quot;, destinatario, recebedor,</span>
+                dataCadastro, dataEntrega, true, StatusEncomenda.PENDENTE);
+
+<span class="fc" id="L32">        EncomendaJpa resultado = EncomendaMapper.converteDomainParaJpa(encomenda);</span>
+
+<span class="fc" id="L34">        assertAll(</span>
+<span class="fc" id="L35">                () -&gt; assertEquals(5L, resultado.getId()),</span>
+<span class="fc" id="L36">                () -&gt; assertEquals(&quot;Livro de Java&quot;, resultado.getDescricao()),</span>
+<span class="fc" id="L37">                () -&gt; assertEquals(&quot;Maria&quot;, resultado.getMoradorDestinatarioJpa().getNome()),</span>
+<span class="fc" id="L38">                () -&gt; assertEquals(&quot;maria@example.com&quot;, resultado.getMoradorDestinatarioJpa().getEmail()),</span>
+<span class="fc" id="L39">                () -&gt; assertEquals(&quot;João&quot;, resultado.getMoradorRecebedorJpa().getNome()),</span>
+<span class="fc" id="L40">                () -&gt; assertEquals(&quot;joao@example.com&quot;, resultado.getMoradorRecebedorJpa().getEmail()),</span>
+<span class="fc" id="L41">                () -&gt; assertEquals(dataCadastro, resultado.getDataDeCadastro()),</span>
+<span class="fc" id="L42">                () -&gt; assertEquals(dataEntrega, resultado.getDataDeEntrega()),</span>
+<span class="fc" id="L43">                () -&gt; assertEquals(true, resultado.isAtivo()),</span>
+<span class="fc" id="L44">                () -&gt; assertEquals(StatusEncomendaJpa.PENDENTE, resultado.getStatus())</span>
+        );
+<span class="fc" id="L46">    }</span>
+
+    @Test
+    void deveUsarDataAtualQuandoDataDeCadastroNaoInformada() {
+<span class="fc" id="L50">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L51">        LocalDateTime antesDaConversao = LocalDateTime.now();</span>
+
+<span class="fc" id="L53">        EncomendaJpa resultado = EncomendaMapper.converteDomainParaJpa(encomenda);</span>
+
+<span class="fc" id="L55">        LocalDateTime depoisDaConversao = LocalDateTime.now();</span>
+<span class="fc" id="L56">        assertAll(</span>
+<span class="fc" id="L57">                () -&gt; assertNotNull(resultado.getDataDeCadastro()),</span>
+<span class="fc" id="L58">                () -&gt; assertFalse(resultado.getDataDeCadastro().isBefore(antesDaConversao)),</span>
+<span class="fc" id="L59">                () -&gt; assertFalse(resultado.getDataDeCadastro().isAfter(depoisDaConversao))</span>
+        );
+<span class="fc" id="L61">    }</span>
+
+    @Test
+    void deveConverterJpaParaDomain() {
+<span class="fc" id="L65">        LocalDateTime dataCadastro = LocalDateTime.of(2024, 1, 10, 8, 30);</span>
+<span class="fc" id="L66">        LocalDateTime dataEntrega = LocalDateTime.of(2024, 1, 10, 9, 15);</span>
+<span class="fc" id="L67">        EncomendaJpa encomendaJpa = new EncomendaJpa(7L, &quot;Livro de Java&quot;,</span>
+<span class="fc" id="L68">                new MoradorJpa(1L, &quot;Maria&quot;, &quot;11999887766&quot;, &quot;maria@example.com&quot;, &quot;101&quot;, &quot;A&quot;),</span>
+<span class="fc" id="L69">                new MoradorJpa(2L, &quot;João&quot;, &quot;11988776655&quot;, &quot;joao@example.com&quot;, &quot;102&quot;, &quot;B&quot;),</span>
+                dataCadastro, dataEntrega, true, StatusEncomendaJpa.NOTIFICACAO_ENVIADA);
+
+<span class="fc" id="L72">        Encomenda resultado = EncomendaMapper.converteJpaParaDomain(encomendaJpa);</span>
+
+<span class="fc" id="L74">        assertAll(</span>
+<span class="fc" id="L75">                () -&gt; assertEquals(7L, resultado.getId()),</span>
+<span class="fc" id="L76">                () -&gt; assertEquals(&quot;Livro de Java&quot;, resultado.getDescricao()),</span>
+<span class="fc" id="L77">                () -&gt; assertEquals(&quot;Maria&quot;, resultado.getMoradorDestinatario().getNome()),</span>
+<span class="fc" id="L78">                () -&gt; assertEquals(&quot;maria@example.com&quot;, resultado.getMoradorDestinatario().getEmail()),</span>
+<span class="fc" id="L79">                () -&gt; assertEquals(&quot;João&quot;, resultado.getMoradorRecebedor().getNome()),</span>
+<span class="fc" id="L80">                () -&gt; assertEquals(&quot;joao@example.com&quot;, resultado.getMoradorRecebedor().getEmail()),</span>
+<span class="fc" id="L81">                () -&gt; assertEquals(dataCadastro, resultado.getDataDeCadastro()),</span>
+<span class="fc" id="L82">                () -&gt; assertEquals(dataEntrega, resultado.getDataDeEntrega()),</span>
+<span class="fc" id="L83">                () -&gt; assertEquals(true, resultado.isAtivo()),</span>
+<span class="fc" id="L84">                () -&gt; assertEquals(StatusEncomenda.NOTIFICACAO_ENVIADA, resultado.getStatus())</span>
+        );
+<span class="fc" id="L86">    }</span>
+
+    @Test
+    void deveConverterJpaParaDomainSemMoradores() {
+<span class="fc" id="L90">        EncomendaJpa encomendaJpa = new EncomendaJpa(8L, &quot;Encomenda sem moradores&quot;,</span>
+<span class="fc" id="L91">                null, null, LocalDateTime.of(2024, 1, 10, 8, 30), null, true,</span>
+                StatusEncomendaJpa.PENDENTE);
+
+<span class="fc" id="L94">        Encomenda resultado = EncomendaMapper.converteJpaParaDomain(encomendaJpa);</span>
+
+<span class="fc" id="L96">        assertAll(</span>
+<span class="fc" id="L97">                () -&gt; assertNull(resultado.getMoradorDestinatario()),</span>
+<span class="fc" id="L98">                () -&gt; assertNull(resultado.getMoradorRecebedor())</span>
+        );
+<span class="fc" id="L100">    }</span>
+
+    @Test
+    void deveConverterRequestDtoParaDomain() {
+<span class="fc" id="L104">        MoradorRequestDTO moradorRequest = new MoradorRequestDTO(&quot;Maria&quot;, &quot;11999887766&quot;, &quot;maria@example.com&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L105">        EncomendaRequestDto dto = new EncomendaRequestDto(&quot;Livro de Java&quot;, moradorRequest);</span>
+
+<span class="fc" id="L107">        Encomenda resultado = EncomendaMapper.converteRequestDtoParaDomain(dto);</span>
+
+<span class="fc" id="L109">        assertAll(</span>
+<span class="fc" id="L110">                () -&gt; assertEquals(&quot;Livro de Java&quot;, resultado.getDescricao()),</span>
+<span class="fc" id="L111">                () -&gt; assertEquals(&quot;Maria&quot;, resultado.getMoradorDestinatario().getNome()),</span>
+<span class="fc" id="L112">                () -&gt; assertEquals(&quot;11999887766&quot;, resultado.getMoradorDestinatario().getTelefone()),</span>
+<span class="fc" id="L113">                () -&gt; assertEquals(&quot;maria@example.com&quot;, resultado.getMoradorDestinatario().getEmail()),</span>
+<span class="fc" id="L114">                () -&gt; assertEquals(&quot;101&quot;, resultado.getMoradorDestinatario().getApartamento()),</span>
+<span class="fc" id="L115">                () -&gt; assertEquals(&quot;A&quot;, resultado.getMoradorDestinatario().getBloco()),</span>
+<span class="fc" id="L116">                () -&gt; assertNull(resultado.getMoradorRecebedor()),</span>
+<span class="fc" id="L117">                () -&gt; assertNotNull(resultado.getDataDeCadastro()),</span>
+<span class="fc" id="L118">                () -&gt; assertEquals(true, resultado.isAtivo()),</span>
+<span class="fc" id="L119">                () -&gt; assertEquals(StatusEncomenda.PENDENTE, resultado.getStatus())</span>
+        );
+<span class="fc" id="L121">    }</span>
+
+    @Test
+    void deveConverterStatusJpaParaDomain() {
+<span class="fc" id="L125">        assertAll(</span>
+<span class="fc" id="L126">                () -&gt; assertEquals(StatusEncomenda.PENDENTE, EncomendaMapper.converteStatusJpaParaDomain(StatusEncomendaJpa.PENDENTE)),</span>
+<span class="fc" id="L127">                () -&gt; assertEquals(StatusEncomenda.NOTIFICACAO_ENVIADA, EncomendaMapper.converteStatusJpaParaDomain(StatusEncomendaJpa.NOTIFICACAO_ENVIADA)),</span>
+<span class="fc" id="L128">                () -&gt; assertEquals(StatusEncomenda.NOTIFICACAO_RECEBIDA, EncomendaMapper.converteStatusJpaParaDomain(StatusEncomendaJpa.NOTIFICACAO_RECEBIDA)),</span>
+<span class="fc" id="L129">                () -&gt; assertEquals(StatusEncomenda.ENTREGUE, EncomendaMapper.converteStatusJpaParaDomain(StatusEncomendaJpa.ENTREGUE))</span>
+        );
+<span class="fc" id="L131">    }</span>
+
+    @Test
+    void deveConverterStatusDomainParaJpa() {
+<span class="fc" id="L135">        assertAll(</span>
+<span class="fc" id="L136">                () -&gt; assertEquals(StatusEncomendaJpa.PENDENTE, EncomendaMapper.converteStatusDomainParaJpa(StatusEncomenda.PENDENTE)),</span>
+<span class="fc" id="L137">                () -&gt; assertEquals(StatusEncomendaJpa.NOTIFICACAO_ENVIADA, EncomendaMapper.converteStatusDomainParaJpa(StatusEncomenda.NOTIFICACAO_ENVIADA)),</span>
+<span class="fc" id="L138">                () -&gt; assertEquals(StatusEncomendaJpa.NOTIFICACAO_RECEBIDA, EncomendaMapper.converteStatusDomainParaJpa(StatusEncomenda.NOTIFICACAO_RECEBIDA)),</span>
+<span class="fc" id="L139">                () -&gt; assertEquals(StatusEncomendaJpa.ENTREGUE, EncomendaMapper.converteStatusDomainParaJpa(StatusEncomenda.ENTREGUE))</span>
+        );
+<span class="fc" id="L141">    }</span>
+
+    @Test
+    void deveRetornarNullQuandoParametroForNulo() {
+<span class="fc" id="L145">        assertAll(</span>
+<span class="fc" id="L146">                () -&gt; assertNull(EncomendaMapper.converteDomainParaJpa(null)),</span>
+<span class="fc" id="L147">                () -&gt; assertNull(EncomendaMapper.converteJpaParaDomain(null)),</span>
+<span class="fc" id="L148">                () -&gt; assertNull(EncomendaMapper.converteRequestDtoParaDomain(null)),</span>
+<span class="fc" id="L149">                () -&gt; assertNull(EncomendaMapper.converteStatusJpaParaDomain(null)),</span>
+<span class="fc" id="L150">                () -&gt; assertNull(EncomendaMapper.converteStatusDomainParaJpa(null))</span>
+        );
+<span class="fc" id="L152">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

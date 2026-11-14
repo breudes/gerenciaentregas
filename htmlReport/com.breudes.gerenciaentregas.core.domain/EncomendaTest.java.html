@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.domain</a> &gt; <span class="el_source">EncomendaTest.java</span></div><h1>EncomendaTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.domain;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L14">class EncomendaTest {</span>
+
+    @Test
+    @DisplayName(&quot;deve criar encomenda com todos os dados informados&quot;)
+    void deveCriarEncomendaComTodosOsDadosInformados() {
+<span class="fc" id="L19">        Morador destinatario = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L20">        Morador recebedor = new Morador(2L, &quot;João Pereira&quot;, &quot;11888888888&quot;, &quot;205&quot;, &quot;B&quot;);</span>
+<span class="fc" id="L21">        LocalDateTime dataCadastro = LocalDateTime.of(2026, 10, 29, 18, 0);</span>
+<span class="fc" id="L22">        LocalDateTime dataEntrega = LocalDateTime.of(2026, 10, 30, 9, 30);</span>
+
+<span class="fc" id="L24">        Encomenda encomenda = new Encomenda(10L, &quot;Caixa de livros&quot;, destinatario, recebedor, dataCadastro, dataEntrega, true, StatusEncomenda.ENTREGUE);</span>
+
+<span class="fc" id="L26">        assertAll(</span>
+<span class="fc" id="L27">                () -&gt; assertEquals(10L, encomenda.getId()),</span>
+<span class="fc" id="L28">                () -&gt; assertEquals(&quot;Caixa de livros&quot;, encomenda.getDescricao()),</span>
+<span class="fc" id="L29">                () -&gt; assertEquals(destinatario, encomenda.getMoradorDestinatario()),</span>
+<span class="fc" id="L30">                () -&gt; assertEquals(recebedor, encomenda.getMoradorRecebedor()),</span>
+<span class="fc" id="L31">                () -&gt; assertEquals(dataCadastro, encomenda.getDataDeCadastro()),</span>
+<span class="fc" id="L32">                () -&gt; assertEquals(dataEntrega, encomenda.getDataDeEntrega()),</span>
+<span class="fc" id="L33">                () -&gt; assertTrue(encomenda.isAtivo()),</span>
+<span class="fc" id="L34">                () -&gt; assertEquals(StatusEncomenda.ENTREGUE, encomenda.getStatus())</span>
+        );
+<span class="fc" id="L36">    }</span>
+
+    @Test
+    @DisplayName(&quot;deve atualizar os dados da encomenda pelos setters&quot;)
+    void deveAtualizarDadosDaEncomendaPelosSetters() {
+<span class="fc" id="L41">        Encomenda encomenda = new Encomenda();</span>
+<span class="fc" id="L42">        Morador destinatario = new Morador(3L, &quot;Ana Souza&quot;, &quot;11777777777&quot;, &quot;303&quot;, &quot;C&quot;);</span>
+<span class="fc" id="L43">        Morador recebedor = new Morador(4L, &quot;Carlos Lima&quot;, &quot;11666666666&quot;, &quot;404&quot;, &quot;D&quot;);</span>
+<span class="fc" id="L44">        LocalDateTime dataCadastro = LocalDateTime.of(2026, 11, 1, 10, 15);</span>
+<span class="fc" id="L45">        LocalDateTime dataEntrega = LocalDateTime.of(2026, 11, 2, 15, 45);</span>
+
+<span class="fc" id="L47">        encomenda.setId(11L);</span>
+<span class="fc" id="L48">        encomenda.setDescricao(&quot;Kit de manutenção&quot;);</span>
+<span class="fc" id="L49">        encomenda.setMoradorDestinatario(destinatario);</span>
+<span class="fc" id="L50">        encomenda.setMoradorRecebedor(recebedor);</span>
+<span class="fc" id="L51">        encomenda.setDataDeCadastro(dataCadastro);</span>
+<span class="fc" id="L52">        encomenda.setDataDeEntrega(dataEntrega);</span>
+<span class="fc" id="L53">        encomenda.setAtivo(false);</span>
+<span class="fc" id="L54">        encomenda.setStatus(StatusEncomenda.NOTIFICACAO_ENVIADA);</span>
+
+<span class="fc" id="L56">        assertAll(</span>
+<span class="fc" id="L57">                () -&gt; assertEquals(11L, encomenda.getId()),</span>
+<span class="fc" id="L58">                () -&gt; assertEquals(&quot;Kit de manutenção&quot;, encomenda.getDescricao()),</span>
+<span class="fc" id="L59">                () -&gt; assertEquals(destinatario, encomenda.getMoradorDestinatario()),</span>
+<span class="fc" id="L60">                () -&gt; assertEquals(recebedor, encomenda.getMoradorRecebedor()),</span>
+<span class="fc" id="L61">                () -&gt; assertEquals(dataCadastro, encomenda.getDataDeCadastro()),</span>
+<span class="fc" id="L62">                () -&gt; assertEquals(dataEntrega, encomenda.getDataDeEntrega()),</span>
+<span class="fc" id="L63">                () -&gt; assertFalse(encomenda.isAtivo()),</span>
+<span class="fc" id="L64">                () -&gt; assertEquals(StatusEncomenda.NOTIFICACAO_ENVIADA, encomenda.getStatus())</span>
+        );
+<span class="fc" id="L66">    }</span>
+
+    @Test
+    @DisplayName(&quot;deve manter o construtor vazio sem valor inicial&quot;)
+    void deveManterConstrutorVazioSemValoresIniciais() {
+<span class="fc" id="L71">        Encomenda encomenda = new Encomenda();</span>
+
+<span class="fc" id="L73">        assertAll(</span>
+<span class="fc" id="L74">                () -&gt; assertNull(encomenda.getId()),</span>
+<span class="fc" id="L75">                () -&gt; assertNull(encomenda.getDescricao()),</span>
+<span class="fc" id="L76">                () -&gt; assertNull(encomenda.getMoradorDestinatario()),</span>
+<span class="fc" id="L77">                () -&gt; assertNull(encomenda.getMoradorRecebedor()),</span>
+<span class="fc" id="L78">                () -&gt; assertNull(encomenda.getDataDeCadastro()),</span>
+<span class="fc" id="L79">                () -&gt; assertNull(encomenda.getDataDeEntrega()),</span>
+<span class="fc" id="L80">                () -&gt; assertFalse(encomenda.isAtivo()),</span>
+<span class="fc" id="L81">                () -&gt; assertNull(encomenda.getStatus())</span>
+        );
+<span class="fc" id="L83">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

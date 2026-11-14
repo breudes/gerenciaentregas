@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmarNotificacaoDeEncomendaUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.encomenda</a> &gt; <span class="el_source">ConfirmarNotificacaoDeEncomendaUseCase.java</span></div><h1>ConfirmarNotificacaoDeEncomendaUseCase.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.encomenda;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.StatusEncomenda;
+import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
+import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
+
+public class ConfirmarNotificacaoDeEncomendaUseCase {
+    private final EncomendaRepository encomendaRepository;
+
+<span class="fc" id="L11">    public ConfirmarNotificacaoDeEncomendaUseCase(EncomendaRepository encomendaRepository) {</span>
+<span class="fc" id="L12">        this.encomendaRepository = encomendaRepository;</span>
+<span class="fc" id="L13">    }</span>
+
+    public Encomenda execute(Long idEncomenda){
+<span class="fc" id="L16">        validaEncomenda(idEncomenda);</span>
+<span class="fc" id="L17">        return encomendaRepository.confirmaNotificacaoEncomenda(idEncomenda);</span>
+    }
+
+    public void validaEncomenda(Long idEncomenda){
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (idEncomenda == null) {</span>
+<span class="fc" id="L22">            throw new EncomendaValidationException(&quot;id&quot;, &quot;ID de encomenda não pode ser nulo.&quot;);</span>
+        }
+
+<span class="fc" id="L25">        Encomenda encomendaExistente = encomendaRepository.buscarEncomenda(idEncomenda);</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (encomendaExistente == null) {</span>
+<span class="fc" id="L27">            throw new EncomendaValidationException(&quot;encomenda&quot;, &quot;Encomenda não encontrada no sistema.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (encomendaExistente.getStatus() == null) {</span>
+<span class="fc" id="L31">            throw new EncomendaValidationException(&quot;status&quot;,</span>
+                    &quot;Status da encomenda não pode ser nulo.&quot;);
+        }
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (encomendaExistente.getStatus() != StatusEncomenda.NOTIFICACAO_ENVIADA) {</span>
+<span class="fc" id="L36">            throw new EncomendaValidationException(&quot;status&quot;,</span>
+                    &quot;Notificação ainda não foi enviada.&quot;);
+        }
+<span class="fc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

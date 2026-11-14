@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaJpa.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.infrastructures.entity</a> &gt; <span class="el_source">EncomendaJpa.java</span></div><h1>EncomendaJpa.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.infrastructures.entity;
+
+import com.breudes.gerenciaentregas.infrastructures.enums.StatusEncomendaJpa;
+import jakarta.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = &quot;encomendas&quot;)
+public class EncomendaJpa implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
+    private String descricao;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private MoradorJpa moradorDestinatarioJpa;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private MoradorJpa moradorRecebedorJpa;
+    private LocalDateTime dataDeCadastro;
+    private LocalDateTime dataDeEntrega;
+    private boolean ativo;
+    @Enumerated
+    private StatusEncomendaJpa status;
+
+<span class="fc" id="L26">    public EncomendaJpa() {</span>
+<span class="fc" id="L27">    }</span>
+
+    public EncomendaJpa(Long id, String descricao,
+                        MoradorJpa moradorDestinatarioJpa, MoradorJpa moradorRecebedorJpa,
+<span class="fc" id="L31">                        LocalDateTime dataDeCadastro, LocalDateTime dataDeEntrega, boolean ativo, StatusEncomendaJpa status) {</span>
+<span class="fc" id="L32">        this.id = id;</span>
+<span class="fc" id="L33">        this.descricao = descricao;</span>
+<span class="fc" id="L34">        this.moradorDestinatarioJpa = moradorDestinatarioJpa;</span>
+<span class="fc" id="L35">        this.moradorRecebedorJpa = moradorRecebedorJpa;</span>
+<span class="fc" id="L36">        this.dataDeCadastro = dataDeCadastro;</span>
+<span class="fc" id="L37">        this.dataDeEntrega = dataDeEntrega;</span>
+<span class="fc" id="L38">        this.ativo = ativo;</span>
+<span class="fc" id="L39">        this.status = status;</span>
+<span class="fc" id="L40">    }</span>
+
+    public Long getId() {
+<span class="fc" id="L43">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L47">        this.id = id;</span>
+<span class="fc" id="L48">    }</span>
+
+    public String getDescricao() {
+<span class="fc" id="L51">        return descricao;</span>
+    }
+
+    public void setDescricao(String descricao) {
+<span class="fc" id="L55">        this.descricao = descricao;</span>
+<span class="fc" id="L56">    }</span>
+
+    public MoradorJpa getMoradorDestinatarioJpa() {
+<span class="fc" id="L59">        return moradorDestinatarioJpa;</span>
+    }
+
+    public void setMoradorDestinatarioJpa(MoradorJpa moradorDestinatarioJpa) {
+<span class="fc" id="L63">        this.moradorDestinatarioJpa = moradorDestinatarioJpa;</span>
+<span class="fc" id="L64">    }</span>
+
+    public MoradorJpa getMoradorRecebedorJpa() {
+<span class="fc" id="L67">        return moradorRecebedorJpa;</span>
+    }
+
+    public void setMoradorRecebedorJpa(MoradorJpa moradorRecebedorJpa) {
+<span class="fc" id="L71">        this.moradorRecebedorJpa = moradorRecebedorJpa;</span>
+<span class="fc" id="L72">    }</span>
+
+    public LocalDateTime getDataDeCadastro() {
+<span class="fc" id="L75">        return dataDeCadastro;</span>
+    }
+
+    public void setDataDeCadastro(LocalDateTime dataDeCadastro) {
+<span class="fc" id="L79">        this.dataDeCadastro = dataDeCadastro;</span>
+<span class="fc" id="L80">    }</span>
+
+    public LocalDateTime getDataDeEntrega() {
+<span class="fc" id="L83">        return dataDeEntrega;</span>
+    }
+
+    public void setDataDeEntrega(LocalDateTime dataDeEntrega) {
+<span class="fc" id="L87">        this.dataDeEntrega = dataDeEntrega;</span>
+<span class="fc" id="L88">    }</span>
+
+    public boolean isAtivo() {
+<span class="fc" id="L91">        return ativo;</span>
+    }
+
+    public void setAtivo(boolean ativo) {
+<span class="fc" id="L95">        this.ativo = ativo;</span>
+<span class="fc" id="L96">    }</span>
+
+    public StatusEncomendaJpa getStatus() {
+<span class="fc" id="L99">        return status;</span>
+    }
+
+    public void setStatus(StatusEncomendaJpa status) {
+<span class="fc" id="L103">        this.status = status;</span>
+<span class="fc" id="L104">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L108">        return &quot;EncomendaJpa{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, descricao='&quot; + descricao + '\'' +
+                &quot;, moradorDestinatarioJpa=&quot; + moradorDestinatarioJpa +
+                &quot;, moradorRecebedorJpa=&quot; + moradorRecebedorJpa +
+                &quot;, dataDeCadastro=&quot; + dataDeCadastro +
+                &quot;, dataDeEntrega=&quot; + dataDeEntrega +
+                &quot;, ativo=&quot; + ativo +
+                &quot;, status=&quot; + status +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

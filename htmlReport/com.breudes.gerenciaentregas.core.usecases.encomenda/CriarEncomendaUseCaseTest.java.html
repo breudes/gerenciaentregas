@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CriarEncomendaUseCaseTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.core.usecases.encomenda</a> &gt; <span class="el_source">CriarEncomendaUseCaseTest.java</span></div><h1>CriarEncomendaUseCaseTest.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.core.usecases.encomenda;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.exception.EncomendaValidationException;
+import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
+
+<span class="fc" id="L16">class CriarEncomendaUseCaseTest {</span>
+
+    private static class RepositoryEmMemoria implements EncomendaRepository {
+        private Encomenda encomendaSalva;
+
+        @Override
+        public Encomenda criarEncomenda(Encomenda encomenda) {
+<span class="fc" id="L23">            this.encomendaSalva = encomenda;</span>
+<span class="fc" id="L24">            return encomenda;</span>
+        }
+
+        @Override
+        public Encomenda buscarEncomenda(Long idEncomenda) {
+<span class="nc" id="L29">            return null;</span>
+        }
+
+        @Override
+        public Encomenda confirmarEntregaEncomenda(Encomenda encomenda) {
+<span class="nc" id="L34">            return encomenda;</span>
+        }
+
+        @Override
+        public Encomenda enviaNotificacaoEncomenda(Long idEncomenda) {
+<span class="nc" id="L39">            return null;</span>
+        }
+
+        @Override
+        public Encomenda confirmaNotificacaoEncomenda(Long idEncomenda) {
+<span class="nc" id="L44">            return null;</span>
+        }
+    }
+
+    private CriarEncomendaUseCase novoUseCase(RepositoryEmMemoria repository) {
+<span class="fc" id="L49">        return new CriarEncomendaUseCase(repository);</span>
+    }
+
+    @Test
+    @DisplayName(&quot;Deve criar uma encomenda quando os dados forem válidos.&quot;)
+    void deveCriarEncomendaQuandoDadosForemValidos() {
+<span class="fc" id="L55">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L56">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L57">        Morador morador = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;maria@example.com&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L58">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L60">        Encomenda resultado = useCase.execute(encomenda);</span>
+
+<span class="fc" id="L62">        assertAll(</span>
+<span class="fc" id="L63">                () -&gt; assertSame(encomenda, resultado),</span>
+<span class="fc" id="L64">                () -&gt; assertSame(encomenda, repository.encomendaSalva)</span>
+        );
+<span class="fc" id="L66">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando encomenda for nula.&quot;)
+    void deveRejeitarCriacaoQuandoEncomendaForNula() {
+<span class="fc" id="L71">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L72">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+
+<span class="fc" id="L74">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L76">                () -&gt; useCase.execute(null)</span>
+        );
+
+<span class="fc" id="L79">        assertEquals(&quot;Encomenda não pode ser nula.&quot;, erro.getMessage());</span>
+<span class="fc" id="L80">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando descrição for nula.&quot;)
+    void deveRejeitarCriacaoQuandoDescricaoForNula() {
+<span class="fc" id="L85">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L86">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L87">        Morador morador = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L88">        Encomenda encomenda = new Encomenda(null, null, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L90">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L92">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L95">        assertEquals(&quot;Descrição é obrigatória e não pode ser nula.&quot;, erro.getMessage());</span>
+<span class="fc" id="L96">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando descrição for vazia.&quot;)
+    void deveRejeitarCriacaoQuandoDescricaoForVazia() {
+<span class="fc" id="L101">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L102">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L103">        Morador morador = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L104">        Encomenda encomenda = new Encomenda(null, &quot;   &quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L106">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L108">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L111">        assertEquals(&quot;Descrição é obrigatória e não pode ser vazia.&quot;, erro.getMessage());</span>
+<span class="fc" id="L112">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando morador for nulo.&quot;)
+    void deveRejeitarCriacaoQuandoMoradorForNulo() {
+<span class="fc" id="L117">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L118">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L119">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, null, null, null, null, true, null);</span>
+
+<span class="fc" id="L121">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L123">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L126">        assertEquals(&quot;Morador é obrigatório e não pode ser nulo.&quot;, erro.getMessage());</span>
+<span class="fc" id="L127">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando nome do morador for nulo.&quot;)
+    void deveRejeitarCriacaoQuandoNomeDoMoradorForNulo() {
+<span class="fc" id="L132">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L133">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L134">        Morador morador = new Morador(1L, null, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L135">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L137">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L139">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L142">        assertEquals(&quot;Nome de morador é obrigatório e não pode ser nulo.&quot;, erro.getMessage());</span>
+<span class="fc" id="L143">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando nome do morador for vazio.&quot;)
+    void deveRejeitarCriacaoQuandoNomeDoMoradorForVazio() {
+<span class="fc" id="L148">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L149">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L150">        Morador morador = new Morador(1L, &quot;   &quot;, &quot;11999999999&quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L151">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L153">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L155">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L158">        assertEquals(&quot;Nome de morador é obrigatório e não pode ser vazio.&quot;, erro.getMessage());</span>
+<span class="fc" id="L159">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando e-mail do morador estiver vazio.&quot;)
+    void deveRejeitarCriacaoQuandoEmailDoMoradorEstiverVazio() {
+<span class="fc" id="L164">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L165">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L166">        Morador morador = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, &quot;   &quot;, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L167">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L169">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L171">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L174">        assertEquals(&quot;E-mail do morador é obrigatório e não pode ser vazio.&quot;, erro.getMessage());</span>
+<span class="fc" id="L175">    }</span>
+
+    @Test
+    @DisplayName(&quot;Deve rejeitar criação quando e-mail do morador for nulo.&quot;)
+    void deveRejeitarCriacaoQuandoEmailDoMoradorForNulo() {
+<span class="fc" id="L180">        RepositoryEmMemoria repository = new RepositoryEmMemoria();</span>
+<span class="fc" id="L181">        CriarEncomendaUseCase useCase = novoUseCase(repository);</span>
+<span class="fc" id="L182">        Morador morador = new Morador(1L, &quot;Maria Silva&quot;, &quot;11999999999&quot;, null, &quot;101&quot;, &quot;A&quot;);</span>
+<span class="fc" id="L183">        Encomenda encomenda = new Encomenda(null, &quot;Caixa de ingredientes&quot;, morador, null, null, null, true, null);</span>
+
+<span class="fc" id="L185">        EncomendaValidationException erro = assertThrows(</span>
+                EncomendaValidationException.class,
+<span class="nc" id="L187">                () -&gt; useCase.execute(encomenda)</span>
+        );
+
+<span class="fc" id="L190">        assertEquals(&quot;E-mail do morador é obrigatório e não pode ser vazio.&quot;, erro.getMessage());</span>
+<span class="fc" id="L191">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

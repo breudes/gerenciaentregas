@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MoradorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.interfaces.controller</a> &gt; <span class="el_source">MoradorController.java</span></div><h1>MoradorController.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.interfaces.controller;
+
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.usecases.morador.AtualizarMoradorUseCase;
+import com.breudes.gerenciaentregas.core.usecases.morador.CriarMoradorUseCase;
+import com.breudes.gerenciaentregas.interfaces.dto.ApiErrorDTO;
+import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorOutputDTO;
+import com.breudes.gerenciaentregas.interfaces.dto.morador.MoradorRequestDTO;
+import com.breudes.gerenciaentregas.interfaces.mapper.MoradorMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/api/moradores&quot;)
+@Tag(name = &quot;Moradores&quot;, description = &quot;Cadastro e atualização dos moradores destinatários.&quot;)
+public class MoradorController {
+    private final CriarMoradorUseCase criarMoradorUseCase;
+    private final AtualizarMoradorUseCase atualizarMoradorUseCase;
+
+<span class="fc" id="L26">    public MoradorController(CriarMoradorUseCase criarMoradorUseCase, AtualizarMoradorUseCase atualizarMoradorUseCase) {</span>
+<span class="fc" id="L27">        this.criarMoradorUseCase = criarMoradorUseCase;</span>
+<span class="fc" id="L28">        this.atualizarMoradorUseCase = atualizarMoradorUseCase;</span>
+<span class="fc" id="L29">    }</span>
+
+    @PostMapping
+        @Operation(summary = &quot;Cadastrar morador&quot;, description = &quot;Cadastra os dados de contato e localização de um morador.&quot;)
+        @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Morador cadastrado&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos ou telefone já cadastrado&quot;,
+                content = @Content(schema = @Schema(implementation = ApiErrorDTO.class)))
+        })
+    public Morador criaMorador(@RequestBody MoradorRequestDTO moradorRequestDTO) {
+<span class="fc" id="L39">        return criarMoradorUseCase.execute(MoradorMapper.converteRequestDtoParaEntity(moradorRequestDTO));</span>
+    }
+
+    @PutMapping
+        @Operation(summary = &quot;Atualizar morador&quot;, description = &quot;Atualiza os dados de um morador identificado pelo telefone atual.&quot;)
+        @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Morador atualizado&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos, morador não encontrado ou telefone em uso&quot;,
+                content = @Content(schema = @Schema(implementation = ApiErrorDTO.class)))
+        })
+        public Morador atualizaMorador(
+            @Parameter(name = &quot;telefoneAtual&quot;, description = &quot;Telefone atual usado para localizar o morador&quot;, example = &quot;11999999999&quot;, required = true)
+            @RequestParam(&quot;telefoneAtual&quot;) String telefoneAtual,
+            @RequestBody MoradorOutputDTO moradorOutputDTO
+        ){
+<span class="fc" id="L54">        return atualizarMoradorUseCase.execute(telefoneAtual, MoradorMapper.converteOutputDtoParaEntity(moradorOutputDTO));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

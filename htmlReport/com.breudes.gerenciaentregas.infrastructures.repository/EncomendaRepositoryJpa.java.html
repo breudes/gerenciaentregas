@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EncomendaRepositoryJpa.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">com.breudes.gerenciaentregas in gerenciaentregas Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.breudes.gerenciaentregas.infrastructures.repository</a> &gt; <span class="el_source">EncomendaRepositoryJpa.java</span></div><h1>EncomendaRepositoryJpa.java</h1><pre class="source lang-java linenums">package com.breudes.gerenciaentregas.infrastructures.repository;
+
+import com.breudes.gerenciaentregas.core.domain.Encomenda;
+import com.breudes.gerenciaentregas.core.domain.Morador;
+import com.breudes.gerenciaentregas.core.event.NotificacaoEmail;
+import com.breudes.gerenciaentregas.core.port.NotificacaoPublisher;
+import com.breudes.gerenciaentregas.core.repository.EncomendaRepository;
+import com.breudes.gerenciaentregas.infrastructures.entity.EncomendaJpa;
+import com.breudes.gerenciaentregas.infrastructures.entity.MoradorJpa;
+import com.breudes.gerenciaentregas.infrastructures.enums.StatusEncomendaJpa;
+import com.breudes.gerenciaentregas.infrastructures.springdatajpa.SpringDataJpaEncomenda;
+import com.breudes.gerenciaentregas.infrastructures.springdatajpa.SpringDataJpaMorador;
+import com.breudes.gerenciaentregas.interfaces.mapper.EncomendaMapper;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.breudes.gerenciaentregas.interfaces.mapper.EncomendaMapper.*;
+
+@Repository
+public class EncomendaRepositoryJpa implements EncomendaRepository {
+    private final SpringDataJpaEncomenda springDataJpaEncomenda;
+    private final SpringDataJpaMorador springDataJpaMorador;
+    private final NotificacaoPublisher notificacaoPublisher;
+
+<span class="fc" id="L28">    public EncomendaRepositoryJpa(SpringDataJpaEncomenda springDataJpaEncomenda, SpringDataJpaMorador springDataJpaMorador, NotificacaoPublisher notificacaoPublisher) {</span>
+<span class="fc" id="L29">        this.springDataJpaEncomenda = springDataJpaEncomenda;</span>
+<span class="fc" id="L30">        this.springDataJpaMorador = springDataJpaMorador;</span>
+<span class="fc" id="L31">        this.notificacaoPublisher = notificacaoPublisher;</span>
+<span class="fc" id="L32">    }</span>
+
+    @Override
+    public Encomenda criarEncomenda(Encomenda encomenda) {
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (encomenda == null) {</span>
+<span class="nc" id="L37">            return null;</span>
+        }
+        // verifica se a encomenda já existe pela a descrição
+<span class="fc" id="L40">        Optional&lt;EncomendaJpa&gt; encomendaEncontrada = springDataJpaEncomenda.findByDescricao(encomenda.getDescricao());</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">       if(encomendaEncontrada.isPresent()){</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;Encomenda já registrada&quot;);</span>
+        } else {
+<span class="fc" id="L44">            EncomendaJpa encomendaJpa = converteDomainParaJpa(encomenda);</span>
+            // verifica se o morador já existe pelo o telefone
+<span class="fc" id="L46">            Optional&lt;MoradorJpa&gt; moradorEncontrado = springDataJpaMorador.findByTelefone(encomenda.getMoradorDestinatario().getTelefone());</span>
+
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if(moradorEncontrado.isPresent()){</span>
+<span class="nc" id="L49">                MoradorJpa moradorEncontradoJpa = moradorEncontrado.get();</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">                if(Objects.equals(moradorEncontradoJpa.getNome(), encomenda.getMoradorDestinatario().getNome())){</span>
+<span class="nc" id="L51">                    encomendaJpa.setMoradorDestinatarioJpa(moradorEncontrado.get());</span>
+                } else
+<span class="nc" id="L53">                    throw new IllegalArgumentException(&quot;Telefone já registrado para outro morador.&quot;);</span>
+            }
+
+<span class="fc" id="L56">            EncomendaJpa encomendaSalva = springDataJpaEncomenda.save(encomendaJpa);</span>
+<span class="fc" id="L57">            Encomenda encomendaSalvaDomain = EncomendaMapper.converteJpaParaDomain(encomendaSalva);</span>
+
+<span class="fc" id="L59">           Morador destinatario = encomendaSalvaDomain.getMoradorDestinatario();</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">            if (encomendaSalva.getId() == null) {</span>
+<span class="nc" id="L61">                throw new IllegalStateException(&quot;A encomenda criada precisa ter um ID para gerar a notificação.&quot;);</span>
+            }
+
+<span class="fc" id="L64">            notificacaoPublisher.publicar(new NotificacaoEmail(</span>
+<span class="fc" id="L65">                    encomendaSalva.getId(),</span>
+<span class="fc" id="L66">                    destinatario.getEmail(),</span>
+<span class="fc" id="L67">                    destinatario.getNome(),</span>
+<span class="fc" id="L68">                    encomendaSalva.getDescricao(),</span>
+<span class="fc" id="L69">                    destinatario.getApartamento(),</span>
+<span class="fc" id="L70">                    destinatario.getBloco()</span>
+            ));
+
+<span class="fc" id="L73">            Encomenda encomendaNotificada = this.enviaNotificacaoEncomenda(encomendaSalva.getId());</span>
+<span class="fc" id="L74">            enviaNotificacaoEncomenda(encomendaSalva.getId());</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            return encomendaNotificada != null ? encomendaNotificada : encomendaSalvaDomain;</span>
+        }
+    }
+
+    @Override
+    public Encomenda buscarEncomenda(Long idEncomenda) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (idEncomenda == null) {</span>
+<span class="nc" id="L82">            return null;</span>
+        }
+
+<span class="nc" id="L85">        Optional&lt;EncomendaJpa&gt; encomendaEncontrada = springDataJpaEncomenda.findById(idEncomenda);</span>
+<span class="nc" id="L86">        return encomendaEncontrada.map(EncomendaMapper::converteJpaParaDomain).orElse(null);</span>
+    }
+
+    @Override
+    public Encomenda enviaNotificacaoEncomenda(Long idEncomenda){
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (idEncomenda == null) {</span>
+<span class="nc" id="L92">            return null;</span>
+        }
+
+<span class="fc" id="L95">        Optional&lt;EncomendaJpa&gt; encomendaEncontrada = springDataJpaEncomenda.findById(idEncomenda);</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (encomendaEncontrada.isEmpty()) {</span>
+<span class="nc" id="L97">            return null;</span>
+        }
+
+<span class="fc" id="L100">        EncomendaJpa encomendaJpa = encomendaEncontrada.get();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (encomendaJpa.getStatus() == StatusEncomendaJpa.PENDENTE) {</span>
+<span class="fc" id="L102">            encomendaJpa.setStatus(StatusEncomendaJpa.NOTIFICACAO_ENVIADA);</span>
+<span class="fc" id="L103">            springDataJpaEncomenda.save(encomendaJpa);</span>
+<span class="fc" id="L104">            return EncomendaMapper.converteJpaParaDomain(encomendaJpa);</span>
+        }
+
+<span class="fc" id="L107">        return null;</span>
+    }
+
+    @Override
+    public Encomenda confirmaNotificacaoEncomenda(Long idEncomenda) {
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (idEncomenda == null) {</span>
+<span class="nc" id="L113">            return null;</span>
+        }
+
+<span class="nc" id="L116">        Optional&lt;EncomendaJpa&gt; encomendaEncontrada = springDataJpaEncomenda.findById(idEncomenda);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (encomendaEncontrada.isEmpty()) {</span>
+<span class="nc" id="L118">            return null;</span>
+        }
+
+<span class="nc" id="L121">        EncomendaJpa encomendaJpa = encomendaEncontrada.get();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (encomendaJpa.getStatus() == StatusEncomendaJpa.NOTIFICACAO_ENVIADA) {</span>
+<span class="nc" id="L123">            encomendaJpa.setStatus(StatusEncomendaJpa.NOTIFICACAO_RECEBIDA);</span>
+<span class="nc" id="L124">            springDataJpaEncomenda.save(encomendaJpa);</span>
+<span class="nc" id="L125">            return EncomendaMapper.converteJpaParaDomain(encomendaJpa);</span>
+        }
+<span class="nc" id="L127">        return null;</span>
+    }
+
+    @Override
+    public Encomenda confirmarEntregaEncomenda(Encomenda encomenda) {
+<span class="nc bnc" id="L132" title="All 4 branches missed.">        if (encomenda == null || encomenda.getId() == null) {</span>
+<span class="nc" id="L133">            return null;</span>
+        }
+
+<span class="nc" id="L136">        EncomendaJpa encomendaJpa = springDataJpaEncomenda.findById(encomenda.getId()).orElse(null);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (encomendaJpa == null) {</span>
+<span class="nc" id="L138">            return null;</span>
+        }
+
+<span class="nc" id="L141">        encomendaJpa.setStatus(StatusEncomendaJpa.ENTREGUE);</span>
+<span class="nc" id="L142">        encomendaJpa.setDataDeEntrega(LocalDateTime.now());</span>
+<span class="nc" id="L143">        encomendaJpa.setAtivo(false);</span>
+
+<span class="nc" id="L145">        EncomendaJpa encomendaAtualizada = springDataJpaEncomenda.save(encomendaJpa);</span>
+<span class="nc" id="L146">        return converteJpaParaDomain(encomendaAtualizada);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
